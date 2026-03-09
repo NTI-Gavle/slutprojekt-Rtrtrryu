@@ -15,7 +15,7 @@
 <header class="site-header">
     <div class="header-container">
         <h1 class="site-title">
-            <a href="index.php">My Home Project</a>
+            <a href="index.php">Rule 89</a>
         </h1>
 
         <?php require __DIR__ . '/nav.php'; ?>
