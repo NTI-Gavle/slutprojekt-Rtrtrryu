@@ -12,7 +12,7 @@
     <script src="js/app.js" defer></script>
 </head>
 <body>
-<header class="site-header">
+<header id="header" class="site-header">
     <div class="header-container">
         <h1 class="site-title">
             <a href="index.php">Rule 89</a>
@@ -22,4 +22,3 @@
     </div>
 </header>
 
-<main class="main-content">
