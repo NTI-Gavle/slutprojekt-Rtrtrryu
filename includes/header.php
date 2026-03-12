@@ -12,14 +12,13 @@
     <script src="js/app.js" defer></script>
 </head>
 <body>
-<header class="site-header">
+<header id="header" class="site-header">
     <div class="header-container">
         <h1 class="site-title">
-            <a href="index.php">My Home Project</a>
+            <a href="index.php">Rule 89</a>
         </h1>
 
         <?php require __DIR__ . '/nav.php'; ?>
     </div>
 </header>
 
-<main class="main-content">
