@@ -105,6 +105,93 @@
     margin-left: 150px;
   
   }
+
+  /*Postwindow*/
+
+  .post-window {
+    display: flex;
+    flex-direction: column;   /* stacks posts vertically */
+    gap: 20px;
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.post-form input,
+.post-form textarea {
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.post-form textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.post-form button {
+    align-self: flex-end;
+    padding: 8px 24px;
+    background: #551D5E;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.post {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.post-header {
+    background: black;
+    color: white;
+    padding: 12px 16px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.post-content {
+    padding: 16px;
+    background: #FFD700;
+    min-height: 80px;
+    font-size: 15px;
+}
+
+.reply {
+    display: flex;
+    flex-direction: row;
+}
+
+.likes {
+    width: 50px;
+    height: 50px;
+    background-color: #551D5E;
+}
+
+.comment {
+    flex: 1;
+    height: 50px;
+    background-color: #FFD700;
+}
+ 
   
   @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
