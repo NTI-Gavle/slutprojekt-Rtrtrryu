@@ -13,12 +13,12 @@ if (isset($_SESSION['id'])) {
     }
 }
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'], $_POST['body'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'], $_POST['content'])) {
     $isAdult = isset($_POST['adultcheck']) ? 1 : 0;
-
-    $sql = "INSERT INTO posts (title, content, adultcheck) VALUES (?, ?, ?)";
+    $creator_id=$_SESSION["user_id"];
+    $sql = "INSERT INTO posts (title, body, adultcheck,creator_id) VALUES (?, ?, ?,?)";
     $stmt = $dbconn->prepare($sql);
-    $stmt->execute([$_POST['title'], $_POST['body']]);
+    $stmt->execute([htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']),$isAdult], $creator_id);
     header("Location: " . $_SERVER['PHP_SELF']); // reload page to show new post
     exit();
 }
@@ -40,7 +40,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="post-window">
 
         <!-- Create post form -->
-        <form class="post-form" method="POST" action="">
+        <form class="post-form" method="POST" action="index.php">
             <input type="text" name="title" placeholder="Title" required>
             <textarea name="content" placeholder="Write something..." required></textarea>
             <button type="submit">Post</button>
@@ -54,20 +54,7 @@ require_once __DIR__ . '/../includes/header.php';
         </form>
 
         <!-- Render posts from database -->
-        <?php foreach ($posts as $post): ?>
-            <div class="post">
-                <div class="post-header">
-                    <?php echo htmlspecialchars($post['title']); ?>
-                </div>
-                <div class="post-content">
-                    <?php echo nl2br(htmlspecialchars($post['body'])); ?>
-                </div>
-                <div class="reply">
-                    <div class="likes"></div>
-                    <div class="comment"></div>
-                </div>
-            </div>
-        <?php endforeach; ?>
+        
 
 
     </div>

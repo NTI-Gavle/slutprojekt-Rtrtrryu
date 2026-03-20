@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +16,11 @@
 </head>
 <body>
 <header id="header" class="site-header">
+<?php
+if (isset($_SESSION["user_id"])) {
+    echo $_SESSION["username"];
+}
+?>
     <div class="header-container">
         <h1 class="site-title">
             <a href="index.php">Rule 89</a>
