@@ -17,3 +17,5 @@ function addPost() {
   
     container.appendChild(post);
   }
+
+  

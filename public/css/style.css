@@ -191,6 +191,29 @@
     height: 50px;
     background-color: #FFD700;
 }
+.image-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: #555;
+}
+
+.image-upload input[type="file"] {
+    font-size: 13px;
+}
+
+.post-image {
+    width: 100%;
+    background: #f5f5f5;
+}
+
+.post-image img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+}
  
   
   @media screen and (max-height: 450px) {
