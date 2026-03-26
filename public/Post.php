@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'], $_POST['cont
     }
 
     $isAdult = isset($_POST['adultcheck']) ? 1 : 0;
-    $sql = "INSERT INTO posts (title, body, adultcheck, creator_id, image_path) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO posts (title, body, adultcheck, creator_id, image_path, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
     $stmt = $dbconn->prepare($sql);
     $stmt->execute([$_POST['title'], $_POST['content'], $isAdult, $_SESSION['user_id'], $imagePath]);
 
