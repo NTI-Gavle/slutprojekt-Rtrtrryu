@@ -1,14 +1,14 @@
 <?php
 
 use Dom\Document;
-    session_start();
+    require_once __DIR__ . '/../includes/header.php';
     
     $errormsg="";
     if(isset($_SESSION["Registererror"])){
         $errormsg=$_SESSION["Registererror"];
         unset($_SESSION["Registererror"]);
     }
-    require_once __DIR__ . '/../includes/header.php';
+    
 ?>
 
 <!DOCTYPE html>

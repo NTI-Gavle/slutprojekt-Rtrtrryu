@@ -9,7 +9,7 @@ session_start();
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'My Home Project' ?></title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
 
     <!-- JS -->
     <script src="js/app.js" defer></script>

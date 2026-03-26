@@ -173,6 +173,9 @@
     background: #FFD700;
     min-height: 80px;
     font-size: 15px;
+    word-break: break-word; 
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .reply {

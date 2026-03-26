@@ -1,70 +1,69 @@
 <?php
-include('../database/db.php');
-// Fetch all posts newest first
-$posts = $dbconn->query("SELECT * FROM posts ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
-
-$pageTitle = "Home";
+$pageTitle = "Make a post";
 require_once __DIR__ . '/../includes/header.php';
+include('../database/db.php');
 
-
-$userIsAdult = false;
-if (isset($_SESSION['id'])) {
-    $stmt = $dbconn->prepare("SELECT ålder FROM user WHERE id = ?");
-    $stmt->execute([$_SESSION['id']]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($user) {
-        $dob = new DateTime($user['ålder']);
-        $today = new DateTime();
-        $userIsAdult = $today->diff($dob)->y >= 18;
-    }
-}
-
-
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'], $_POST['content'])) {
-    $isAdult = isset($_POST['adultcheck']) ? 1 : 0;
-    $sql = "INSERT INTO posts (title, body, adultcheck, creator_id) VALUES (?, ?, ?, ?)";
-    $stmt = $dbconn->prepare($sql);
-    $stmt->execute([$_POST['title'], $_POST['content'], $isAdult, $_SESSION['user_id']]);
-    header("Location: index.php"); // reload page to show new post
+// Redirect logged-out users away immediately
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit();
 }
 
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'], $_POST['content'])) {
 
+    // Handle image upload
+    $imagePath = null;
+    if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] === UPLOAD_ERR_OK) {
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $fileType = mime_content_type($_FILES['postimage']['tmp_name']);
+
+        if (!in_array($fileType, $allowed)) {
+            die("Only JPEG, PNG, GIF and WEBP images are allowed.");
+        }
+        if ($_FILES['postimage']['size'] > 5 * 1024 * 1024) {
+            die("Image must be under 5MB.");
+        }
+
+        $ext = pathinfo($_FILES['postimage']['name'], PATHINFO_EXTENSION);
+        $filename = uniqid('post_', true) . '.' . $ext;
+        $destination = __DIR__ . '/uploads/' . $filename;
+
+        if (move_uploaded_file($_FILES['postimage']['tmp_name'], $destination)) {
+            $imagePath = 'uploads/' . $filename;
+        }
+    }
+
+    $isAdult = isset($_POST['adultcheck']) ? 1 : 0;
+    $sql = "INSERT INTO posts (title, body, adultcheck, creator_id, image_path) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $dbconn->prepare($sql);
+    $stmt->execute([$_POST['title'], $_POST['content'], $isAdult, $_SESSION['user_id'], $imagePath]);
+
+    // Go back to index after posting
+    header("Location: index.php");
+    exit();
+}
 ?>
 
 <link rel="stylesheet" href="css/style.css">
 
-<div style="width:100%; display:flex; flex-direction:column;">
-    <div>
-        <?php include('../includes/menu.php'); ?>
-    </div>
-
-    <div class="post-window">
-
-        <!-- Create post form -->
-        <form class="post-form" method="POST" action="" enctype="multipart/form-data">
-            <input type="text" name="title" placeholder="Title" required>
-            <textarea name="content" placeholder="Write something..." required></textarea>
-            <label class="image-upload">
-                <span>Add image (optional)</span>
-                <input type="file" name="postimage" accept="image/*">
-            </label>
-                <button type="submit">Post</button>
-            <label class="adult-toggle">
-                 <span>18+ content</span>
-                    <label class="switch">
-                    <input type="checkbox" name="is_adult" id="adultToggle">
+<div class="post-window">
+    <form class="post-form" method="POST" action="Post.php" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Title" required>
+        <textarea name="content" placeholder="Write something..." required></textarea>
+        <label class="image-upload">
+            <span>Add image (optional)</span>
+            <input type="file" name="postimage" accept="image/*">
+        </label>
+        <label class="adult-toggle">
+            <span>18+ content</span>
+            <label class="switch">
+                <input type="checkbox" name="adultcheck" id="adultToggle">
                 <span class="slider"></span>
             </label>
         </label>
-        </form>
-
-        <!-- Render posts from database -->
-        
-
-
-    </div>
+        <button type="submit">Post</button>
+    </form>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
