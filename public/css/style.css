@@ -1,3 +1,5 @@
+@import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css');
+
 /* Header */
 .site-header {
     background-color: #551D5E;
@@ -171,7 +173,6 @@
 .post-content {
     padding: 16px;
     background: #FFD700;
-    min-height: 80px;
     font-size: 15px;
     word-break: break-word; 
     overflow-wrap: break-word;

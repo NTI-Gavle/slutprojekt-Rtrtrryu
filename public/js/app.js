@@ -18,4 +18,20 @@ function addPost() {
     container.appendChild(post);
   }
 
+  function like(post_id)
+  {
+    fetch(`../Like.php?post_id=${post_id}`)
+      .then(response => response.text()).then(data =>{
+        RefreshLikes(post_id);
+      })
+  }
+
+  function RefreshLikes(post_id){
+    fetch(`../Likesbackend.php?post_id=${post_id}`)
+      .then(response => response.json()).then(data =>{
+          document.getElementById('lie')
+
+
+      })
+  }
   
