@@ -44,7 +44,7 @@ $posts = $dbconn->query("
             <?php $restricted = $post['adultcheck'] && (!isset($_SESSION['user_id']) || !$userIsAdult); ?>
             <div class="post" style="position:relative;">
                 <a href="PostViewer.php?post_id=<?php echo($post['id']); ?>" class="text-decoration-none link-dark">
-                <div class="post-header" style="<?php echo $restricted ? 'filter:blur(6px);' : ''; ?>">
+                <div class="post-header" style="<?php echo $restricted ? 'filter:blur(60px);' : ''; ?>">
                     <span class="post-author">@<?php echo htmlspecialchars($post['username']); ?></span><br>
                     <span class="post-title"><?php echo htmlspecialchars($post['title']); ?></span>
                     <?php if ($post['adultcheck']): ?>

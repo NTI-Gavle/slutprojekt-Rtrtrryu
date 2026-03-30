@@ -29,6 +29,8 @@ use Dom\Document;
         <input type="text" name="namn" class="input <?php if ($errormsg!="") echo "Error"; ?>" id="name"><br>
         password:
         <input type="password" name="lösenord" class="input <?php if ($errormsg!="") echo "Error"; ?>" id="password"><br>
+        Age:
+        <input type="text" name="ålder" class="input" <?php if ($errormsg!="") echo "Error"; ?> id="age"><br>
         <button type="submit">Login</button><br>
         
         har du redan ett konto?<br>
