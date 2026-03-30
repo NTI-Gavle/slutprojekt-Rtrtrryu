@@ -1,0 +1,275 @@
+:root {
+    --ink: #111111;
+    --paper: #ffffff;
+    --background: #f6f6f6;
+    --line: 5px solid var(--ink);
+    --line-thin: 4px solid var(--ink);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--ink);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+.page {
+    width: min(100%, 980px);
+    margin: 28px auto;
+    padding: 0 18px;
+}
+
+.post-card {
+    position: relative;
+    padding-top: 78px;
+}
+
+.poster-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 98px;
+    height: 70px;
+    display: grid;
+    place-items: center;
+    border: var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 1.9rem;
+}
+
+.post-title {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 12px 105px;
+    border: var(--line);
+    background: var(--paper);
+}
+
+.post-title h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 2.8vw, 2.2rem);
+    font-weight: 500;
+}
+
+.post-body {
+    min-height: 360px;
+    padding: 42px 46px 34px;
+    border-left: var(--line);
+    border-right: var(--line);
+    border-bottom: var(--line);
+    background: var(--paper);
+}
+
+.post-body p {
+    margin: 0;
+    text-align: center;
+    font-size: clamp(1.45rem, 2.6vw, 2rem);
+    line-height: 1.4;
+}
+
+.post-image {
+    width: min(100%, 620px);
+    margin: 30px auto 0;
+}
+
+.post-image img {
+    border: var(--line-thin);
+    object-fit: cover;
+}
+
+.post-footer {
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr) 58px;
+    align-items: stretch;
+    min-height: 130px;
+    border-left: var(--line);
+    border-right: var(--line);
+    border-bottom: var(--line);
+    background: var(--paper);
+}
+
+.like-button {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-right: var(--line);
+    background: transparent;
+    cursor: pointer;
+}
+
+.heart-shape {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    transform: rotate(45deg);
+    border-right: var(--line-thin);
+    border-bottom: var(--line-thin);
+    background: var(--paper);
+}
+
+.heart-shape::before,
+.heart-shape::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: var(--line-thin);
+    border-radius: 50%;
+    background: var(--paper);
+}
+
+.heart-shape::before {
+    top: -18px;
+    left: -4px;
+}
+
+.heart-shape::after {
+    top: -4px;
+    left: -18px;
+}
+
+.comments-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 6px 0 6px 22px;
+}
+
+.comments-panel {
+    min-height: 78px;
+    padding: 14px 24px;
+    border: var(--line);
+    background: var(--paper);
+}
+
+.comments-panel h2 {
+    margin: 0;
+    font-size: clamp(1.6rem, 2.5vw, 2rem);
+    font-weight: 500;
+}
+
+.comment-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.comment-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.comment-item p {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.35;
+}
+
+.comment-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 44px;
+    padding-left: 8px;
+}
+
+.comment-tab {
+    width: 34px;
+    height: 34px;
+    border: var(--line-thin);
+    background: var(--paper);
+}
+
+.comment-tab.is-active {
+    background: #e8e8e8;
+}
+
+.scroll-rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    border-left: var(--line);
+}
+
+.scroll-rail::before {
+    content: "";
+    display: block;
+    width: 34px;
+    height: 100%;
+    border: var(--line-thin);
+    background: var(--paper);
+}
+
+.scroll-thumb {
+    position: absolute;
+    width: 22px;
+    height: 56px;
+    border: var(--line-thin);
+    background: var(--paper);
+}
+
+@media (max-width: 720px) {
+    .page {
+        margin: 18px auto;
+        padding: 0 10px 24px;
+    }
+
+    .post-card {
+        padding-top: 88px;
+    }
+
+    .poster-badge {
+        width: 88px;
+        height: 64px;
+        font-size: 1.5rem;
+    }
+
+    .post-title {
+        padding: 12px 24px;
+    }
+
+    .post-body {
+        min-height: 300px;
+        padding: 28px 18px;
+    }
+
+    .post-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .like-button {
+        min-height: 78px;
+        border-right: 0;
+        border-bottom: var(--line);
+    }
+
+    .comments-shell {
+        padding: 16px;
+    }
+
+    .scroll-rail {
+        min-height: 78px;
+        padding: 16px 0;
+        border-left: 0;
+        border-top: var(--line);
+    }
+
+    .comment-tabs {
+        gap: 14px;
+    }
+}
