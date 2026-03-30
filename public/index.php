@@ -22,7 +22,7 @@ $posts = $dbconn->query("
     ORDER BY posts.created_at DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<body onload="RefreshLikes(<?php echo (htmlspecialchars($_GET['post_id']))?>)">
+<body>
     
 
 <link rel="stylesheet" href="css/style.css">
@@ -60,9 +60,6 @@ $posts = $dbconn->query("
                     </div>
                 <?php endif; ?>
                 <div class="reply">
-                    <div class="likes">
-                       <button class="like_btn"></button>
-                    </div>
                     <div class="comment"></div>
                 </div>
                 <?php if ($restricted): ?>
