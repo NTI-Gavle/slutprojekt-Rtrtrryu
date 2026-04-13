@@ -86,29 +86,38 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                             <?php echo htmlspecialchars($post['title'] ?? 'Untitled'); ?>
                         </h5>
 
-                        <p class="card-text mb-3">
-                            <?php echo nl2br(htmlspecialchars($post['body'] ?? '')); ?>
-                        </p>
+                        <div class="row g-3 align-items-start mb-3">
+                            <div class="<?php echo !empty($post['image_path']) ? 'col-md-8' : 'col-12'; ?>">
+                                <p class="card-text mb-0 border">
+                                    <?php echo nl2br(htmlspecialchars($post['body'] ?? '')); ?>
+                                </p>
+                            </div>
+                                                    
+                            <?php if (!empty($post['image_path'])): ?>
+                                <div class="col-md-4">
+                                    <img
+                                        src="<?php echo htmlspecialchars($post['image_path']); ?>"
+                                        alt="Post image"
+                                        class="img-fluid rounded"
+                                    >
+                                </div>
+                            <?php endif; ?>
+                        </div>
 
-                        <?php if (!empty($post['image_path'])): ?>
-                            <img
-                                src="<?php echo htmlspecialchars($post['image_path']); ?>"
-                                alt="Post image"
-                                class="img-fluid rounded mb-3"
-                            >
-                        <?php endif; ?>
                     </div>
-
-                    <div class="d-flex justify-content-end">
+               
+                    
+                    <div class="likebox">
+                        <p id="like_counter" class="counter"></p> 
                         <button
                             type="button"
                             id="like"
                             class="btn btn-outline-danger"
-                            onclick="Like(<?php echo (int)$postId; ?>)"
-                        >
-                            Like
+                            onclick="Like(<?php echo (int)$postId; ?>)"> 
                         </button>
+                        
                     </div>
+                
                 </div>
 
                 <?php if ($restricted): ?>
@@ -122,6 +131,10 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                     </div>
                 <?php endif; ?>
             </div>
+                    
+            <?php include __DIR__ . '/../includes/post-comments.php'; ?>
+
+
         </div>
     </div>
 </div>

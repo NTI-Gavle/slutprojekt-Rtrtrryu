@@ -18,7 +18,7 @@ session_start();
 <header id="header" class="site-header">
 <?php
 if (isset($_SESSION["user_id"])) {
-    echo <div>$_SESSION["username"]</div>;
+    echo '<div class="profilepic">'.$_SESSION["username"].'</div>';
 }
 ?>
     <div class="header-container">
