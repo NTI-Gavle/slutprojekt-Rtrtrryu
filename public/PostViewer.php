@@ -12,22 +12,119 @@ if (isset($_SESSION['user_id'])) {
         $userIsAdult = (int)$user['ålder'] >= 18;
     }
 }
-?>
 
+// Read post id safely from URL: PostViewer.php?post_id=123
+$postId = filter_input(INPUT_GET, 'post_id', FILTER_VALIDATE_INT);
+if (!$postId) {
+    die('No valid post selected.');
+}
+
+// Fetch one post + author username
+$stmt = $dbconn->prepare("
+    SELECT posts.*, `användare`.`namn` AS username
+    FROM posts
+    JOIN `användare` ON posts.creator_id = `användare`.id
+    WHERE posts.id = ?
+    LIMIT 1
+");
+$stmt->execute([$postId]);
+$post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$post) {
+    die('Post not found.');
+}
+
+$restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$userIsAdult);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Viewer</title>
+
+    <!-- If Bootstrap is already loaded in header.php, remove this line -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
     <script src="js/app.js" defer></script>
 
-    <title>Document</title>
+    <style>
+        .blurred { filter: blur(6px); user-select: none; }
+        .adult-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: .75rem;
+            padding: 1rem;
+        }
+        .adult-overlay a { color: #fff; text-decoration: underline; }
+    </style>
 </head>
-<body onload="RefreshLikes(<?php echo($_GET['post_id']); ?>)">
-<div class="likes">
-    <button class="btn w-100 h-100" id="like" onclick="Like(<?php echo($_GET['post_id']); ?>)"></button>
+<body onload="RefreshLikes(<?php echo (int)$postId; ?>)">
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm position-relative">
+                <div class="card-body">
+                    <div class="<?php echo $restricted ? 'blurred' : ''; ?>">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="text-muted">@<?php echo htmlspecialchars($post['username'] ?? 'unknown'); ?></span>
+                            <?php if (!empty($post['adultcheck'])): ?>
+                                <span class="badge text-bg-danger">18+</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <h5 class="card-title fw-bold mb-3">
+                            <?php echo htmlspecialchars($post['title'] ?? 'Untitled'); ?>
+                        </h5>
+
+                        <p class="card-text mb-3">
+                            <?php echo nl2br(htmlspecialchars($post['body'] ?? '')); ?>
+                        </p>
+
+                        <?php if (!empty($post['image_path'])): ?>
+                            <img
+                                src="<?php echo htmlspecialchars($post['image_path']); ?>"
+                                alt="Post image"
+                                class="img-fluid rounded mb-3"
+                            >
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button
+                            type="button"
+                            id="like"
+                            class="btn btn-outline-danger"
+                            onclick="Like(<?php echo (int)$postId; ?>)"
+                        >
+                            Like
+                        </button>
+                    </div>
+                </div>
+
+                <?php if ($restricted): ?>
+                    <div class="adult-overlay">
+                        <p class="fw-bold mb-2">This post is 18+ only</p>
+                        <?php if (!isset($_SESSION['user_id'])): ?>
+                            <a href="login.php">Log in to view</a>
+                        <?php else: ?>
+                            <p class="mb-0">You must be 18 or older to view this.</p>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </div>
+
 </body>
 </html>

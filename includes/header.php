@@ -18,7 +18,7 @@ session_start();
 <header id="header" class="site-header">
 <?php
 if (isset($_SESSION["user_id"])) {
-    echo $_SESSION["username"];
+    echo <div>$_SESSION["username"]</div>;
 }
 ?>
     <div class="header-container">
