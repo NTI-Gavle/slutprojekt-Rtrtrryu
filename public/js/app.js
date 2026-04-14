@@ -39,3 +39,20 @@ function RefreshLikes(post_id) {
       like_counter.innerText = data.likes;
     })
 }
+//zoom img function
+document.addEventListener('click', (e) => {
+  const preview = e.target.closest('.post-image-preview');
+  const box = document.getElementById('imageLightbox');
+  const big = document.getElementById('lightboxImg');
+
+  if (preview && box && big) {
+      big.src = preview.src;
+      box.classList.add('show');
+      return;
+  }
+
+  if (e.target.id === 'imageLightbox' || e.target.id === 'lightboxImg') {
+      box.classList.remove('show');
+      big.src = '';
+  }
+});

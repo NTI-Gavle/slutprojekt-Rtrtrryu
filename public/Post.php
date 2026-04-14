@@ -12,27 +12,47 @@ if (!isset($_SESSION['user_id'])) {
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'], $_POST['content'])) {
 
-    // Handle image upload
-    $imagePath = null;
-    if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] === UPLOAD_ERR_OK) {
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $fileType = mime_content_type($_FILES['postimage']['tmp_name']);
+   // Handle image upload
+$imagePath = null;
 
-        if (!in_array($fileType, $allowed)) {
-            die("Only JPEG, PNG, GIF and WEBP images are allowed.");
-        }
-        if ($_FILES['postimage']['size'] > 5 * 1024 * 1024) {
-            die("Image must be under 5MB.");
-        }
-
-        $ext = pathinfo($_FILES['postimage']['name'], PATHINFO_EXTENSION);
-        $filename = uniqid('post_', true) . '.' . $ext;
-        $destination = __DIR__ . '/uploads/' . $filename;
-
-        if (move_uploaded_file($_FILES['postimage']['tmp_name'], $destination)) {
-            $imagePath = 'uploads/' . $filename;
-        }
+if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] !== UPLOAD_ERR_NO_FILE) {
+    if ($_FILES['postimage']['error'] !== UPLOAD_ERR_OK) {
+        die("Upload failed. Error code: " . $_FILES['postimage']['error']);
     }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $fileType = $finfo->file($_FILES['postimage']['tmp_name']);
+
+    $allowed = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/gif'  => 'gif',
+        'image/webp' => 'webp',
+    ];
+
+    if (!isset($allowed[$fileType])) {
+        die("Only JPEG, PNG, GIF and WEBP images are allowed.");
+    }
+
+    if ($_FILES['postimage']['size'] > 5 * 1024 * 1024) {
+        die("Image must be under 5MB.");
+    }
+
+    $uploadDir = __DIR__ . '/uploads/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $filename = uniqid('post_', true) . '.' . $allowed[$fileType];
+    $destination = $uploadDir . $filename;
+
+    if (!move_uploaded_file($_FILES['postimage']['tmp_name'], $destination)) {
+        die("Could not save uploaded file.");
+    }
+
+    // Use web path
+    $imagePath = 'uploads/' . $filename;
+}
 
     $isAdult = isset($_POST['adultcheck']) ? 1 : 0;
     $sql = "INSERT INTO posts (title, body, adultcheck, creator_id, image_path, created_at) VALUES (?, ?, ?, ?, ?, NOW())";

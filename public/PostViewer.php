@@ -94,11 +94,11 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                             </div>
                                                     
                             <?php if (!empty($post['image_path'])): ?>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <img
                                         src="<?php echo htmlspecialchars($post['image_path']); ?>"
                                         alt="Post image"
-                                        class="img-fluid rounded"
+                                        class="img-fluid rounded post-image-preview"
                                     >
                                 </div>
                             <?php endif; ?>
@@ -137,6 +137,10 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
 
         </div>
     </div>
+</div>
+
+<div id="imageLightbox" class="image-lightbox">
+    <img id="lightboxImg" src="" alt="Zoomed image">
 </div>
 
 </body>
