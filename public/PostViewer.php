@@ -99,6 +99,7 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                                         src="<?php echo htmlspecialchars($post['image_path']); ?>"
                                         alt="Post image"
                                         class="img-fluid rounded post-image-preview"
+                                        onclick="openLightbox(this.src)"
                                     >
                                 </div>
                             <?php endif; ?>
@@ -139,7 +140,7 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
     </div>
 </div>
 
-<div id="imageLightbox" class="image-lightbox">
+<div id="imageLightbox" class="image-lightbox" onclick="closeLightbox()">
     <img id="lightboxImg" src="" alt="Zoomed image">
 </div>
 

@@ -56,3 +56,15 @@ document.addEventListener('click', (e) => {
       big.src = '';
   }
 });
+function openLightbox(src) {
+  const box = document.getElementById('imageLightbox');
+  const img = document.getElementById('lightboxImg');
+  img.src = src;
+  box.classList.add('show');
+}
+function closeLightbox() {
+  const box = document.getElementById('imageLightbox');
+  const img = document.getElementById('lightboxImg');
+  box.classList.remove('show');
+  img.src = '';
+}

@@ -218,33 +218,21 @@
     object-fit: cover;
     display: block;
 }
-.post-image-preview {
-    max-width: 100%;
-    width: min(420px, 100%);
-    cursor: zoom-in;
-    transition: transform 0.2s ease;
-}
+
 .post-image-preview:hover {
     transform: scale(1.02);
 }
 
+.post-image-preview { width: min(420px, 100%); cursor: zoom-in; }
 .image-lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    cursor: zoom-out;
+    position: fixed; inset: 0; background: rgba(0,0,0,.85);
+    display: none; align-items: center; justify-content: center; z-index: 9999;
 }
-.image-lightbox img {
-    max-width: 92vw;
-    max-height: 92vh;
-    border-radius: 10px;
-}
-.image-lightbox.show {
-    display: flex;
+.image-lightbox.show { display: flex; }
+.image-lightbox img 
+{   max-width: 92vw; 
+    max-height: 92vh; 
+    border-radius: 10px; 
 }
 
 .likebox{
