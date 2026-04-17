@@ -130,21 +130,23 @@ $backgroundPath = $profile['background_path'] ?? null;
 <style>
     .profile-page .profile-shell {
         position: relative;
-        border: 4px solid #000;
-        background: #e7e7e7;
+        border: 1px solid #dbe0e6;
+        background: #f5f7fa;
+        border-radius: 14px;
         max-width: 980px;
         margin: 0 auto;
+        overflow: hidden;
     }
 
     .profile-page .profile-top-banner {
         height: 150px;
-        border-bottom: 4px solid #000;
-        background: #ddd;
+        border-bottom: 1px solid #dbe0e6;
+        background: #e8ecf1;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        color: #1f1f1f;
+        font-size: 1.7rem;
+        color: #374151;
         overflow: hidden;
     }
 
@@ -166,10 +168,11 @@ $backgroundPath = $profile['background_path'] ?? null;
         width: 175px;
         height: 175px;
         border-radius: 50%;
-        border: 4px solid #000;
-        background: #000;
+        border: 4px solid #fff;
+        background: #111;
         object-fit: cover;
         display: block;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
     }
 
     .profile-page .profile-content {
@@ -180,8 +183,9 @@ $backgroundPath = $profile['background_path'] ?? null;
     }
 
     .profile-page .panel-frame {
-        border: 4px solid #000;
-        background: #efefef;
+        border: 1px solid #dbe0e6;
+        background: #fff;
+        border-radius: 12px;
         padding: 14px;
     }
 
@@ -205,8 +209,9 @@ $backgroundPath = $profile['background_path'] ?? null;
     }
 
     .profile-page .liked-post-item {
-        border: 2px solid #000;
-        background: #fafafa;
+        border: 1px solid #dfe3e8;
+        background: #f9fafb;
+        border-radius: 10px;
     }
 
     .profile-page .liked-post-link {
@@ -245,11 +250,12 @@ $backgroundPath = $profile['background_path'] ?? null;
     }
 
     .profile-page .profile-save-btn {
-        border: 2px solid #000;
-        background: #111;
+        border: 1px solid #111;
+        background: #111827;
         color: #fff;
         padding: 8px 10px;
         cursor: pointer;
+        border-radius: 8px;
     }
 
     .profile-page .profile-feedback {
@@ -306,8 +312,8 @@ $backgroundPath = $profile['background_path'] ?? null;
         </div>
 
         <div class="profile-content">
-            <section class="profile-liked panel-frame">
-                <h5 class="mb-3">Liked post</h5>
+            <section class="profile-liked panel-frame shadow-sm">
+                <h5 class="mb-3 fw-semibold">Liked posts</h5>
                 <?php if (empty($likedPosts)): ?>
                     <p class="text-muted mb-0">No liked posts yet.</p>
                 <?php else: ?>
@@ -334,8 +340,8 @@ $backgroundPath = $profile['background_path'] ?? null;
                 <?php endif; ?>
             </section>
 
-            <aside class="profile-description panel-frame">
-                <h5 class="mb-3"><?php echo htmlspecialchars($username); ?></h5>
+            <aside class="profile-description panel-frame shadow-sm">
+                <h5 class="mb-3 fw-semibold"><?php echo htmlspecialchars($username); ?></h5>
                 <?php if ($isOwnProfile): ?>
                     <p class="profile-subtitle">Edit your profile</p>
                 <?php endif; ?>
@@ -349,18 +355,18 @@ $backgroundPath = $profile['background_path'] ?? null;
                     <?php endif; ?>
 
                     <form method="POST" action="Profile.php" class="profile-edit-form" enctype="multipart/form-data">
-                        <label for="profile_description" class="profile-label">Description</label>
-                        <textarea id="profile_description" name="profile_description" rows="5" maxlength="2000" placeholder="Write your profile description..."><?php echo htmlspecialchars($profileDescription); ?></textarea>
+                        <label for="profile_description" class="form-label profile-label mb-0">Description</label>
+                        <textarea id="profile_description" class="form-control" name="profile_description" rows="5" maxlength="2000" placeholder="Write your profile description..."><?php echo htmlspecialchars($profileDescription); ?></textarea>
 
-                        <label for="avatar_file" class="profile-label">Profile image</label>
-                        <input id="avatar_file" name="avatar_file" type="file" accept="image/*">
-                        <input type="text" value="<?php echo htmlspecialchars((string) ($pfpPath ?? '')); ?>" readonly>
+                        <label for="avatar_file" class="form-label profile-label mb-0 mt-1">Profile image</label>
+                        <input id="avatar_file" class="form-control" name="avatar_file" type="file" accept="image/*">
+                        <input class="form-control form-control-sm text-muted" type="text" value="<?php echo htmlspecialchars((string) ($pfpPath ?? '')); ?>" readonly>
 
-                        <label for="background_file" class="profile-label">Background image</label>
-                        <input id="background_file" name="background_file" type="file" accept="image/*">
-                        <input type="text" value="<?php echo htmlspecialchars((string) ($backgroundPath ?? '')); ?>" readonly>
+                        <label for="background_file" class="form-label profile-label mb-0 mt-1">Background image</label>
+                        <input id="background_file" class="form-control" name="background_file" type="file" accept="image/*">
+                        <input class="form-control form-control-sm text-muted" type="text" value="<?php echo htmlspecialchars((string) ($backgroundPath ?? '')); ?>" readonly>
 
-                        <button type="submit" class="profile-save-btn">Save profile</button>
+                        <button type="submit" class="btn btn-dark mt-2">Save profile</button>
                     </form>
                 <?php else: ?>
                     <?php if ($profileDescription !== ''): ?>

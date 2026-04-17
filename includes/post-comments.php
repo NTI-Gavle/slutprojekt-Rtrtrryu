@@ -15,27 +15,27 @@ $totalComments = (int)$countStmt->fetchColumn();
 $hasMore = $totalComments > $initialLimit;
 ?>
 
-<div class="card mt-3">
+<div class="card mt-3 shadow-sm border-0">
   <div class="card-body">
-    <h6 class="mb-3">Comments</h6>
+    <h6 class="mb-3 fw-semibold">Comments</h6>
 
     <form id="commentForm" class="mb-3" onsubmit="return postComment(event)">
       <input type="hidden" name="post_id" value="<?php echo (int)$postId; ?>">
-      <div class="input-group">
+      <div class="input-group input-group-sm">
         <input type="text" name="body" class="form-control" maxlength="500" placeholder="Write a comment..." <?php echo $isLoggedIn ? '' : 'disabled'; ?> required>
-        <button type="submit" class="btn btn-primary" <?php echo $isLoggedIn ? '' : 'disabled'; ?>>Post</button>
+        <button type="submit" class="btn btn-primary px-3" <?php echo $isLoggedIn ? '' : 'disabled'; ?>>Post</button>
       </div>
     </form>
 
     <div id="commentsList">
       <?php foreach ($comments as $c): ?>
         <?php $canDeleteComment = $currentUserIsAdmin || ($currentUserId > 0 && (int) $c['author_id'] === $currentUserId); ?>
-        <div class="d-flex gap-3 border rounded p-2 mb-2 comment-item" id="comment-<?php echo (int) $c['id']; ?>">
+        <div class="d-flex gap-3 border rounded-3 p-2 mb-2 bg-light-subtle comment-item" id="comment-<?php echo (int) $c['id']; ?>">
           <div class="text-center" style="min-width:72px;">
             <?php if (!empty($c['avatar_path'])): ?>
-              <img src="<?php echo htmlspecialchars((string) $c['avatar_path']); ?>" alt="pfp" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+              <img src="<?php echo htmlspecialchars((string) $c['avatar_path']); ?>" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">
             <?php else: ?>
-              <div style="width:48px;height:48px;border-radius:50%;background:#222;color:#fff;display:grid;place-items:center;">Pfp</div>
+              <div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>
             <?php endif; ?>
             <div class="small mt-1"><?php echo htmlspecialchars($c['username']); ?></div>
           </div>
@@ -73,12 +73,12 @@ function escapeHtml(str) {
 
 function renderComment(c) {
     const div = document.createElement('div');
-    div.className = 'd-flex gap-3 border rounded p-2 mb-2 comment-item';
+    div.className = 'd-flex gap-3 border rounded-3 p-2 mb-2 bg-light-subtle comment-item';
     div.id = `comment-${c.id}`;
 
     const avatarHtml = c.avatar_path
-      ? `<img src="${escapeHtml(c.avatar_path)}" alt="pfp" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">`
-      : `<div style="width:48px;height:48px;border-radius:50%;background:#222;color:#fff;display:grid;place-items:center;">Pfp</div>`;
+      ? `<img src="${escapeHtml(c.avatar_path)}" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">`
+      : `<div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>`;
 
     const canDelete = Boolean(c.can_delete);
     const deleteHtml = canDelete

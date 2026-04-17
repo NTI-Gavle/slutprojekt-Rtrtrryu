@@ -59,45 +59,47 @@ if ($postsTable !== null && $userMeta !== null) {
 
 <link rel="stylesheet" href="css/style.css">
 
-<div style="width:100%; display:flex; flex-direction:column;">
+<div class="container py-4">
     <div><?php include('../includes/menu.php'); ?></div>
 
     <div class="post-window">
 
         <?php if ($currentUserId > 0): ?>
-            <a href="Post.php"><button>Make a post</button></a>
+            <div class="d-flex justify-content-end mb-2">
+                <a href="Post.php" class="btn btn-primary">Make a post</a>
+            </div>
         <?php else: ?>
-            <div class="login-prompt">
-                <a href="login.php">Log in to make a post</a>
+            <div class="alert alert-info py-2 mb-2">
+                <a href="login.php" class="alert-link">Log in to make a post</a>
             </div>
         <?php endif; ?>
 
         <?php if ($isAdmin): ?>
-            <p class="admin-mode-note">Admin mode active: you can delete posts.</p>
+            <div class="alert alert-primary py-2 mb-2">Admin mode active: you can delete posts.</div>
         <?php endif; ?>
 
         <?php if ($adminMessage !== null): ?>
-            <p class="admin-mode-feedback"><?php echo htmlspecialchars($adminMessage); ?></p>
+            <div class="alert alert-warning py-2 mb-2"><?php echo htmlspecialchars($adminMessage); ?></div>
         <?php endif; ?>
 
         <?php foreach ($posts as $post): ?>
             <?php $restricted = !empty($post['adultcheck']) && ($currentUserId <= 0 || !$userIsAdult); ?>
             <?php $canDeletePost = $currentUserId > 0 && ($isAdmin || (int) ($post['creator_id'] ?? 0) === $currentUserId); ?>
-            <div class="post" style="position:relative;">
+            <div class="post feed-post shadow-sm" style="position:relative;">
                 <?php if ($canDeletePost): ?>
                     <form method="POST" action="index.php" class="admin-delete-form" onsubmit="return confirm('Delete this post?');">
                         <input type="hidden" name="delete_post_id" value="<?php echo (int) $post['id']; ?>">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars((string) $_SESSION['csrf_token']); ?>">
-                        <button type="submit" class="admin-delete-btn">Delete</button>
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                 <?php endif; ?>
 
                 <a href="PostViewer.php?post_id=<?php echo (int) $post['id']; ?>" class="text-decoration-none link-dark d-block">
                     <div class="post-header" style="<?php echo $restricted ? 'filter:blur(60px);' : ''; ?>">
-                        <span class="post-author">@<?php echo htmlspecialchars((string) ($post['username'] ?? 'unknown')); ?></span><br>
-                        <span class="post-title"><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></span>
+                        <div class="small text-light-emphasis mb-1">@<?php echo htmlspecialchars((string) ($post['username'] ?? 'unknown')); ?></div>
+                        <div class="h6 mb-0"><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></div>
                         <?php if (!empty($post['adultcheck'])): ?>
-                            <span class="adult-badge">18+</span>
+                            <span class="badge bg-danger ms-2">18+</span>
                         <?php endif; ?>
                     </div>
 
@@ -111,13 +113,9 @@ if ($postsTable !== null && $userMeta !== null) {
                         </div>
                     <?php endif; ?>
 
-                    <div class="reply">
-                        <div class="comment"></div>
-                    </div>
-
                     <?php if ($restricted): ?>
                         <div class="adult-overlay">
-                            <p>This post is 18+ only</p>
+                            <p class="mb-1 fw-semibold">This post is 18+ only</p>
                             <?php if ($currentUserId <= 0): ?>
                                 <a href="login.php">Log in to view</a>
                             <?php else: ?>
@@ -127,9 +125,6 @@ if ($postsTable !== null && $userMeta !== null) {
                     <?php endif; ?>
                 </a>
 
-                <?php if ($canDeletePost): ?>
-                    <div class="admin-post-id">Post #<?php echo (int) $post['id']; ?></div>
-                <?php endif; ?>
             </div>
         <?php endforeach; ?>
 
