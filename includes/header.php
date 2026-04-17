@@ -1,5 +1,18 @@
 <?php
 session_start();
+$headerAvatarPath = null;
+if (isset($_SESSION['user_id'])) {
+    require_once __DIR__ . '/../database/db.php';
+    require_once __DIR__ . '/../database/user_queries.php';
+
+    $headerProfile = getUserProfileData($dbconn, (int) $_SESSION['user_id']);
+    if ($headerProfile !== null && !empty($headerProfile['avatar_path'])) {
+        $headerAvatarPath = (string) $headerProfile['avatar_path'];
+        $_SESSION['avatar_path'] = $headerAvatarPath;
+    } elseif (isset($_SESSION['avatar_path']) && trim((string) $_SESSION['avatar_path']) !== '') {
+        $headerAvatarPath = (string) $_SESSION['avatar_path'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,7 +32,12 @@ session_start();
 <header id="header" class="site-header">
 <?php
 if (isset($_SESSION["user_id"])) {
-    echo '<div class="profilepic rounded-circle"></div>' . $_SESSION["username"];
+    if (!empty($headerAvatarPath)) {
+        echo '<img src="' . htmlspecialchars($headerAvatarPath) . '" alt="Profile picture" class="profilepic rounded-circle">';
+    } else {
+        echo '<div class="profilepic rounded-circle text-white">Pfp</div>';
+    }
+    echo htmlspecialchars((string) $_SESSION["username"]);
 }
 ?>
     <div class="header-container">

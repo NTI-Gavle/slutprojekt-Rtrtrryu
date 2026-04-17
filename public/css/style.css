@@ -162,6 +162,44 @@
     overflow: hidden;
 }
 
+.admin-mode-note {
+    margin: 0;
+    padding: 8px 10px;
+    border: 2px solid #111;
+    background: #e8f0ff;
+    font-weight: 600;
+}
+
+.admin-mode-feedback {
+    margin: 0;
+    padding: 8px 10px;
+    border: 2px solid #111;
+    background: #fff3d8;
+}
+
+.admin-delete-form {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 5;
+}
+
+.admin-delete-btn {
+    border: 2px solid #5f0000;
+    background: #a30000;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.admin-post-id {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    color: #444;
+}
+
 .post-header {
     background: black;
     color: white;
@@ -255,7 +293,183 @@
     height: 50px;
     justify-content: center;
     display: flex;
+    object-fit: cover;
+    overflow: hidden;
 }
+
+/*profile page*/
+
+.profile-shell {
+    position: relative;
+    border: 4px solid #000;
+    background: #e7e7e7;
+    overflow: hidden;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.profile-top-banner {
+    height: 160px;
+    border-bottom: 4px solid #000;
+    background: #dddddd;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    color: #1f1f1f;
+}
+
+.profile-avatar-wrap {
+    position: absolute;
+    right: 28px;
+    top: 78px;
+    z-index: 2;
+}
+
+.profile-avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 4px solid #000;
+    background: #111;
+    object-fit: cover;
+    box-shadow: none;
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: 2.1fr 1fr;
+    gap: 28px;
+    padding: 52px 40px 28px;
+    align-items: stretch;
+}
+
+.panel-frame {
+    border: 4px solid #000;
+    background: #efefef;
+    padding: 16px;
+}
+
+.profile-liked {
+    min-height: 300px;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.liked-posts-scroll {
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.liked-posts-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.liked-post-item {
+    border: 2px solid #000;
+    background: #fafafa;
+}
+
+.liked-post-link {
+    display: block;
+    color: #111;
+    text-decoration: none;
+    padding: 8px;
+}
+
+.liked-post-link:hover {
+    background: #ececec;
+}
+
+.liked-post-meta,
+.liked-post-body {
+    display: block;
+    margin-top: 2px;
+    color: #353535;
+    font-size: 0.82rem;
+}
+
+.profile-description {
+    min-height: 300px;
+}
+
+.profile-subtitle {
+    color: #4f4f4f;
+    margin-top: -8px;
+    margin-bottom: 16px;
+}
+
+.profile-edit-form {
+    display: grid;
+    gap: 8px;
+}
+
+.profile-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.profile-edit-form textarea,
+.profile-edit-form input {
+    width: 100%;
+    border: 2px solid #000;
+    background: #f8f8f8;
+    padding: 8px;
+}
+
+.profile-save-btn {
+    border: 2px solid #000;
+    background: #111;
+    color: #fff;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.profile-feedback {
+    margin: 0 0 8px;
+    padding: 6px 8px;
+    border: 2px solid #000;
+    font-size: 0.85rem;
+}
+
+.profile-feedback.ok {
+    background: #d7ffd5;
+}
+
+.profile-feedback.error {
+    background: #ffd8d8;
+}
+
+/* Mobile */
+@media (max-width: 992px) {
+    .profile-avatar-wrap {
+        right: 16px;
+        top: 84px;
+    }
+
+    .profile-avatar {
+        width: 130px;
+        height: 130px;
+    }
+
+    .profile-content {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 54px 14px 16px;
+    }
+
+    .profile-liked,
+    .profile-description {
+        min-height: 160px;
+        max-height: none;
+    }
+}
+
 
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}

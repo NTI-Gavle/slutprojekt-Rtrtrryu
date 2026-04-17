@@ -2,7 +2,7 @@
   <a href="#" class="closebtn" onclick="closeNav()">&times;</a>
   <a href="#">Explore</a>
   <a href="#">For You</a>
-  <a href="#">Profile</a>
+  <a href="Profile.php">Profile</a>
   <a href="#">Settings</a>
 </div>
 <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
