@@ -241,6 +241,30 @@
     height: 50px;
     background-color: #f4f6f8;
 }
+
+.comment-item {
+    align-items: flex-start;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.comment-content {
+    min-width: 0;
+    flex: 1 1 0;
+    max-width: 100%;
+}
+
+.comment-body {
+    display: block;
+    max-width: 100%;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.comment-actions {
+    flex-shrink: 0;
+}
 .image-upload {
     display: flex;
     flex-direction: column;

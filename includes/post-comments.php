@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (!isset($postId)) { echo '<div class="alert alert-danger">postId is missing.</div>'; return; }
 require_once __DIR__ . '/../database/user_queries.php';
 
@@ -39,12 +39,12 @@ $hasMore = $totalComments > $initialLimit;
             <?php endif; ?>
             <div class="small mt-1"><?php echo htmlspecialchars($c['username']); ?></div>
           </div>
-          <div class="flex-grow-1">
-            <p class="mb-1"><?php echo nl2br(htmlspecialchars($c['body'])); ?></p>
+          <div class="flex-grow-1 comment-content">
+            <p class="mb-1 comment-body"><?php echo nl2br(htmlspecialchars($c['body'])); ?></p>
             <small class="text-muted"><?php echo htmlspecialchars($c['created_at']); ?></small>
           </div>
           <?php if ($canDeleteComment): ?>
-            <div>
+            <div class="ms-auto align-self-start comment-actions">
               <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteComment(<?php echo (int) $c['id']; ?>)">Delete</button>
             </div>
           <?php endif; ?>
@@ -82,7 +82,7 @@ function renderComment(c) {
 
     const canDelete = Boolean(c.can_delete);
     const deleteHtml = canDelete
-      ? `<div><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteComment(${Number(c.id)})">Delete</button></div>`
+      ? `<div class="ms-auto align-self-start comment-actions"><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteComment(${Number(c.id)})">Delete</button></div>`
       : '';
 
     div.innerHTML = `
@@ -90,8 +90,8 @@ function renderComment(c) {
             ${avatarHtml}
             <div class="small mt-1">${escapeHtml(c.username)}</div>
         </div>
-        <div class="flex-grow-1">
-            <p class="mb-1">${escapeHtml(c.body).replace(/\n/g, '<br>')}</p>
+        <div class="flex-grow-1 comment-content">
+            <p class="mb-1 comment-body">${escapeHtml(c.body).replace(/\n/g, '<br>')}</p>
             <small class="text-muted">${escapeHtml(c.created_at)}</small>
         </div>
         ${deleteHtml}
