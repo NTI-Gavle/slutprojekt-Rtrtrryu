@@ -275,7 +275,7 @@ html, body {
 }
 
 .post-blurred {
-    filter: blur(6px);
+    filter: blur(16px);
     user-select: none;
 }
 

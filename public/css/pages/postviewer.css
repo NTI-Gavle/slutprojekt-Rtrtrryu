@@ -1,4 +1,4 @@
-﻿.blurred { filter: blur(6px); user-select: none; }
+.blurred { filter: blur(16px); user-select: none; }
 .adult-overlay {
     position: absolute;
     inset: 0;
@@ -13,3 +13,4 @@
     padding: 1rem;
 }
 .adult-overlay a { color: #fff; text-decoration: underline; }
+
