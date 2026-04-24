@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $pageTitle = "Home";
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
@@ -43,10 +43,13 @@ $userMeta = getUserTableMeta($dbconn);
 if ($postsTable !== null && $userMeta !== null) {
     $postColumns = getTableColumns($dbconn, $postsTable);
     $postCreatorColumn = findColumn($postColumns, ['creator_id', 'user_id', 'author_id']);
+    $avatarSelect = $userMeta['avatar_column'] !== null
+        ? "u.`{$userMeta['avatar_column']}` AS avatar_path"
+        : "NULL AS avatar_path";
 
     if ($postCreatorColumn !== null) {
         $sql = "
-            SELECT p.*, u.`{$userMeta['name_column']}` AS username
+            SELECT p.*, u.`{$userMeta['name_column']}` AS username, {$avatarSelect}
             FROM `{$postsTable}` p
             JOIN `{$userMeta['table']}` u ON p.`{$postCreatorColumn}` = u.`{$userMeta['id_column']}`
             ORDER BY p.created_at DESC
@@ -57,7 +60,7 @@ if ($postsTable !== null && $userMeta !== null) {
 ?>
 <body>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/base/style.css">
 
 <div class="container py-4">
     <div><?php include('../includes/menu.php'); ?></div>
@@ -85,7 +88,7 @@ if ($postsTable !== null && $userMeta !== null) {
         <?php foreach ($posts as $post): ?>
             <?php $restricted = !empty($post['adultcheck']) && ($currentUserId <= 0 || !$userIsAdult); ?>
             <?php $canDeletePost = $currentUserId > 0 && ($isAdmin || (int) ($post['creator_id'] ?? 0) === $currentUserId); ?>
-            <div class="post feed-post shadow-sm" style="position:relative;">
+            <div class="post feed-post shadow-sm position-relative" role="link" tabindex="0" onclick="if(!event.target.closest('a,button,form')) { window.location.href='PostViewer.php?post_id=<?php echo (int) $post['id']; ?>'; }" onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); window.location.href='PostViewer.php?post_id=<?php echo (int) $post['id']; ?>'; }">
                 <?php if ($canDeletePost): ?>
                     <form method="POST" action="index.php" class="admin-delete-form" onsubmit="return confirm('Delete this post?');">
                         <input type="hidden" name="delete_post_id" value="<?php echo (int) $post['id']; ?>">
@@ -94,36 +97,45 @@ if ($postsTable !== null && $userMeta !== null) {
                     </form>
                 <?php endif; ?>
 
-                <a href="PostViewer.php?post_id=<?php echo (int) $post['id']; ?>" class="text-decoration-none link-dark d-block">
-                    <div class="post-header" style="<?php echo $restricted ? 'filter:blur(60px);' : ''; ?>">
-                        <div class="small text-light-emphasis mb-1">@<?php echo htmlspecialchars((string) ($post['username'] ?? 'unknown')); ?></div>
-                        <div class="h6 mb-0"><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></div>
-                        <?php if (!empty($post['adultcheck'])): ?>
-                            <span class="badge bg-danger ms-2">18+</span>
+                <div class="post-header <?php echo $restricted ? 'post-blurred' : ''; ?>">
+                    <div class="post-author-row mb-1">
+                        <?php if (!empty($post['avatar_path'])): ?>
+                            <img src="<?php echo htmlspecialchars((string) $post['avatar_path']); ?>" alt="Profile picture" class="post-author-avatar">
+                        <?php else: ?>
+                            <div class="post-author-avatar post-author-avatar-fallback">Pfp</div>
+                        <?php endif; ?>
+                        <div class="small text-light-emphasis position-relative">
+                            <a href="Profile.php?user_id=<?php echo (int) ($post['creator_id'] ?? 0); ?>" class="text-decoration-none text-reset post-author-link">
+                                @<?php echo htmlspecialchars((string) ($post['username'] ?? 'unknown')); ?>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="h6 mb-0"><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></div>
+                    <?php if (!empty($post['adultcheck'])): ?>
+                        <span class="badge bg-danger ms-2">18+</span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="post-content <?php echo $restricted ? 'post-blurred' : ''; ?>">
+                    <?php echo nl2br(htmlspecialchars((string) ($post['body'] ?? ''))); ?>
+                </div>
+
+                <?php if (!empty($post['image_path'])): ?>
+                    <div class="post-image <?php echo $restricted ? 'post-blurred' : ''; ?>">
+                        <img src="<?php echo htmlspecialchars((string) $post['image_path']); ?>" alt="Post image">
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($restricted): ?>
+                    <div class="adult-overlay">
+                        <p class="mb-1 fw-semibold">This post is 18+ only</p>
+                        <?php if ($currentUserId <= 0): ?>
+                            <a href="login.php">Log in to view</a>
+                        <?php else: ?>
+                            <p>You must be 18 or older to view this</p>
                         <?php endif; ?>
                     </div>
-
-                    <div class="post-content" style="<?php echo $restricted ? 'filter:blur(6px);user-select:none;' : ''; ?>">
-                        <?php echo nl2br(htmlspecialchars((string) ($post['body'] ?? ''))); ?>
-                    </div>
-
-                    <?php if (!empty($post['image_path'])): ?>
-                        <div class="post-image" style="<?php echo $restricted ? 'filter:blur(6px);' : ''; ?>">
-                            <img src="<?php echo htmlspecialchars((string) $post['image_path']); ?>" alt="Post image">
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if ($restricted): ?>
-                        <div class="adult-overlay">
-                            <p class="mb-1 fw-semibold">This post is 18+ only</p>
-                            <?php if ($currentUserId <= 0): ?>
-                                <a href="login.php">Log in to view</a>
-                            <?php else: ?>
-                                <p>You must be 18 or older to view this</p>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </a>
+                <?php endif; ?>
 
             </div>
         <?php endforeach; ?>
@@ -132,3 +144,4 @@ if ($postsTable !== null && $userMeta !== null) {
 </div>
 </body>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

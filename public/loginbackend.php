@@ -1,16 +1,15 @@
 <?php
 session_start();
 
-
-if (!isset($_POST["namn"], $_POST["lösenord"])) {
+if (!isset($_POST["username"], $_POST["password"])) {
     header("Location: login.php");
     exit;
 }
 
-require "../database/db.php";
+require __DIR__ . "/../database/db.php";
 
-$user = $_POST["namn"];
-$pass = $_POST["lösenord"];
+$user = (string) $_POST["username"];
+$pass = (string) $_POST["password"];
 
 $sql = "SELECT * FROM användare WHERE namn = ?";
 $stmt = $dbconn->prepare($sql);
@@ -24,16 +23,13 @@ if (!$result) {
     exit;
 }
 
-if (password_verify($pass, $result["lösenord"])) {
+if (password_verify($pass, (string) $result["lösenord"])) {
     $_SESSION["user_id"] = $result["id"];
     $_SESSION["username"] = $result["namn"];
-    header("location: index.php");
-    die();
-} else {
-    $_SESSION["loginerror"] = "wrong username or password";
+    header("Location: index.php");
+    exit;
 }
 
-
-$_SESSION["hi"]="TEST";
+$_SESSION["loginerror"] = "wrong username or password";
 header("Location: login.php");
 exit;

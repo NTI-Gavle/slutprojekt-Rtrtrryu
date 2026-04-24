@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $pageTitle = "Profile";
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
@@ -119,6 +119,7 @@ if ($isOwnProfile && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $profile = getUserProfileData($dbconn, (int) $profileUserId);
 $likedPosts = getUserLikedPosts($dbconn, (int) $profileUserId, 30);
+$madePosts = getUserCreatedPosts($dbconn, (int) $profileUserId, 30);
 
 $username = $profile['username'] ?? 'Unknown user';
 $profileDescription = trim((string) ($profile['description'] ?? ''));
@@ -126,173 +127,8 @@ $pfpPath = $profile['avatar_path'] ?? null;
 $backgroundPath = $profile['background_path'] ?? null;
 ?>
 
-<link rel="stylesheet" href="css/style.css">
-<style>
-    .profile-page .profile-shell {
-        position: relative;
-        border: 1px solid #dbe0e6;
-        background: #f5f7fa;
-        border-radius: 14px;
-        max-width: 980px;
-        margin: 0 auto;
-        overflow: hidden;
-    }
-
-    .profile-page .profile-top-banner {
-        height: 150px;
-        border-bottom: 1px solid #dbe0e6;
-        background: #e8ecf1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.7rem;
-        color: #374151;
-        overflow: hidden;
-    }
-
-    .profile-page .profile-banner-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .profile-page .profile-avatar-wrap {
-        position: absolute;
-        top: 70px;
-        right: 22px;
-        z-index: 2;
-    }
-
-    .profile-page .profile-avatar {
-        width: 175px;
-        height: 175px;
-        border-radius: 50%;
-        border: 4px solid #fff;
-        background: #111;
-        object-fit: cover;
-        display: block;
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
-    }
-
-    .profile-page .profile-content {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 28px;
-        padding: 52px 34px 26px;
-    }
-
-    .profile-page .panel-frame {
-        border: 1px solid #dbe0e6;
-        background: #fff;
-        border-radius: 12px;
-        padding: 14px;
-    }
-
-    .profile-page .profile-liked {
-        min-height: 300px;
-        max-height: 300px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .profile-page .liked-posts-scroll {
-        overflow-y: auto;
-    }
-
-    .profile-page .liked-posts-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 8px;
-    }
-
-    .profile-page .liked-post-item {
-        border: 1px solid #dfe3e8;
-        background: #f9fafb;
-        border-radius: 10px;
-    }
-
-    .profile-page .liked-post-link {
-        display: block;
-        color: #111;
-        text-decoration: none;
-        padding: 8px;
-    }
-
-    .profile-page .liked-post-link:hover {
-        background: #ececec;
-    }
-
-    .profile-page .liked-post-meta,
-    .profile-page .liked-post-body {
-        display: block;
-        font-size: 0.82rem;
-        color: #353535;
-    }
-
-    .profile-page .profile-description {
-        min-height: 300px;
-    }
-
-    .profile-page .profile-edit-form {
-        display: grid;
-        gap: 8px;
-    }
-
-    .profile-page .profile-edit-form textarea,
-    .profile-page .profile-edit-form input {
-        width: 100%;
-        border: 2px solid #000;
-        background: #f8f8f8;
-        padding: 8px;
-    }
-
-    .profile-page .profile-save-btn {
-        border: 1px solid #111;
-        background: #111827;
-        color: #fff;
-        padding: 8px 10px;
-        cursor: pointer;
-        border-radius: 8px;
-    }
-
-    .profile-page .profile-feedback {
-        margin: 0 0 8px;
-        padding: 6px 8px;
-        border: 2px solid #000;
-        font-size: 0.85rem;
-    }
-
-    .profile-page .profile-feedback.ok { background: #d7ffd5; }
-    .profile-page .profile-feedback.error { background: #ffd8d8; }
-
-    @media (max-width: 992px) {
-        .profile-page .profile-avatar-wrap {
-            right: 12px;
-            top: 85px;
-        }
-
-        .profile-page .profile-avatar {
-            width: 128px;
-            height: 128px;
-        }
-
-        .profile-page .profile-content {
-            grid-template-columns: 1fr;
-            gap: 14px;
-            padding: 48px 12px 14px;
-        }
-
-        .profile-page .profile-liked,
-        .profile-page .profile-description {
-            min-height: 170px;
-            max-height: none;
-        }
-    }
-</style>
-
+<link rel="stylesheet" href="css/base/style.css">
+<link rel="stylesheet" href="css/pages/profile.css">
 <div class="container py-4 profile-page">
     <div class="profile-shell">
         <div class="profile-top-banner">
@@ -312,33 +148,60 @@ $backgroundPath = $profile['background_path'] ?? null;
         </div>
 
         <div class="profile-content">
-            <section class="profile-liked panel-frame shadow-sm">
-                <h5 class="mb-3 fw-semibold">Liked posts</h5>
-                <?php if (empty($likedPosts)): ?>
-                    <p class="text-muted mb-0">No liked posts yet.</p>
-                <?php else: ?>
-                    <div class="liked-posts-scroll">
-                        <ul class="liked-posts-list">
-                            <?php foreach ($likedPosts as $post): ?>
-                                <li class="liked-post-item">
-                                    <a href="PostViewer.php?post_id=<?php echo (int) $post['post_id']; ?>" class="liked-post-link">
-                                        <strong><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></strong>
-                                        <?php if (!empty($post['author_name'])): ?>
-                                            <span class="liked-post-meta">@<?php echo htmlspecialchars((string) $post['author_name']); ?></span>
-                                        <?php endif; ?>
-                                        <span class="liked-post-body">
-                                            <?php
-                                                $body = trim((string) ($post['body'] ?? ''));
-                                                echo htmlspecialchars(mb_strlen($body) > 70 ? mb_substr($body, 0, 70) . '...' : $body);
-                                            ?>
-                                        </span>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-            </section>
+            <div class="profile-left-stack">
+                <section class="profile-liked panel-frame shadow-sm">
+                    <h5 class="mb-3 fw-semibold">Liked posts</h5>
+                    <?php if (empty($likedPosts)): ?>
+                        <p class="text-muted mb-0">No liked posts yet.</p>
+                    <?php else: ?>
+                        <div class="liked-posts-scroll">
+                            <ul class="liked-posts-list">
+                                <?php foreach ($likedPosts as $post): ?>
+                                    <li class="liked-post-item">
+                                        <a href="PostViewer.php?post_id=<?php echo (int) $post['post_id']; ?>" class="liked-post-link">
+                                            <strong><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></strong>
+                                            <?php if (!empty($post['author_name'])): ?>
+                                                <span class="liked-post-meta">@<?php echo htmlspecialchars((string) $post['author_name']); ?></span>
+                                            <?php endif; ?>
+                                            <span class="liked-post-body">
+                                                <?php
+                                                    $body = trim((string) ($post['body'] ?? ''));
+                                                    echo htmlspecialchars(mb_strlen($body) > 70 ? mb_substr($body, 0, 70) . '...' : $body);
+                                                ?>
+                                            </span>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+                </section>
+
+                <section class="profile-made panel-frame shadow-sm">
+                    <h5 class="mb-3 fw-semibold">Made posts</h5>
+                    <?php if (empty($madePosts)): ?>
+                        <p class="text-muted mb-0">No posts yet.</p>
+                    <?php else: ?>
+                        <div class="liked-posts-scroll">
+                            <ul class="liked-posts-list">
+                                <?php foreach ($madePosts as $post): ?>
+                                    <li class="liked-post-item">
+                                        <a href="PostViewer.php?post_id=<?php echo (int) $post['post_id']; ?>" class="liked-post-link">
+                                            <strong><?php echo htmlspecialchars((string) ($post['title'] ?? 'Untitled')); ?></strong>
+                                            <span class="liked-post-body">
+                                                <?php
+                                                    $body = trim((string) ($post['body'] ?? ''));
+                                                    echo htmlspecialchars(mb_strlen($body) > 70 ? mb_substr($body, 0, 70) . '...' : $body);
+                                                ?>
+                                            </span>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+                </section>
+            </div>
 
             <aside class="profile-description panel-frame shadow-sm">
                 <h5 class="mb-3 fw-semibold"><?php echo htmlspecialchars($username); ?></h5>
@@ -359,7 +222,7 @@ $backgroundPath = $profile['background_path'] ?? null;
                         <textarea id="profile_description" class="form-control" name="profile_description" rows="5" maxlength="2000" placeholder="Write your profile description..."><?php echo htmlspecialchars($profileDescription); ?></textarea>
 
                         <label for="avatar_file" class="form-label profile-label mb-0 mt-1">Profile image</label>
-                        <input id="avatar_file" class="form-control" name="avatar_file" type="file" accept="image/*">
+                        <input id="avatar_file" class="form-control" name="avatar_file" type="file" accept="image/jpeg, image/png, image/gif, image/webp">
                         <input class="form-control form-control-sm text-muted" type="text" value="<?php echo htmlspecialchars((string) ($pfpPath ?? '')); ?>" readonly>
 
                         <label for="background_file" class="form-label profile-label mb-0 mt-1">Background image</label>
@@ -381,3 +244,5 @@ $backgroundPath = $profile['background_path'] ?? null;
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
+

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $headerAvatarPath = null;
 if (isset($_SESSION['user_id'])) {
     require_once __DIR__ . '/../database/db.php';
@@ -22,7 +24,12 @@ if (isset($_SESSION['user_id'])) {
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'My Home Project' ?></title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/base/style.css">
+    <?php if (isset($extraStyles) && is_array($extraStyles)): ?>
+        <?php foreach ($extraStyles as $extraStyle): ?>
+            <link rel="stylesheet" href="<?php echo htmlspecialchars((string) $extraStyle); ?>">
+        <?php endforeach; ?>
+    <?php endif; ?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <!-- JS -->
@@ -48,4 +55,8 @@ if (isset($_SESSION["user_id"])) {
         <?php require __DIR__ . '/nav.php'; ?>
     </div>
 </header>
+
+
+
+
 

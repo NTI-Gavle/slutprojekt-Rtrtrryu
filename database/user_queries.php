@@ -216,6 +216,51 @@ function getUserLikedPosts(PDO $dbconn, int $userId, int $limit = 6): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
+function getUserCreatedPosts(PDO $dbconn, int $userId, int $limit = 10): array
+{
+    $limit = max(1, min(30, $limit));
+
+    $postsTable = resolveTableName($dbconn, ['posts', 'post']);
+    if ($postsTable === null) {
+        return [];
+    }
+
+    $postColumns = getTableColumns($dbconn, $postsTable);
+    $postIdColumn = findColumn($postColumns, ['id', 'post_id']);
+    $postTitleColumn = findColumn($postColumns, ['title', 'rubrik']);
+    $postBodyColumn = findColumn($postColumns, ['body', 'content', 'text']);
+    $postCreatedAtColumn = findColumn($postColumns, ['created_at', 'created']);
+    $postCreatorColumn = findColumn($postColumns, ['creator_id', 'user_id', 'author_id']);
+
+    if (
+        $postIdColumn === null ||
+        $postTitleColumn === null ||
+        $postBodyColumn === null ||
+        $postCreatorColumn === null
+    ) {
+        return [];
+    }
+
+    $orderBy = $postCreatedAtColumn !== null
+        ? "p.`{$postCreatedAtColumn}` DESC"
+        : "p.`{$postIdColumn}` DESC";
+
+    $sql = "
+        SELECT
+            p.`{$postIdColumn}` AS post_id,
+            p.`{$postTitleColumn}` AS title,
+            p.`{$postBodyColumn}` AS body
+        FROM `{$postsTable}` p
+        WHERE p.`{$postCreatorColumn}` = ?
+        ORDER BY {$orderBy}
+        LIMIT {$limit}
+    ";
+
+    $stmt = $dbconn->prepare($sql);
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
 function tryAddColumn(PDO $dbconn, string $tableName, string $columnName, string $definition): void
 {
     $sql = "ALTER TABLE `{$tableName}` ADD COLUMN `{$columnName}` {$definition}";
@@ -565,4 +610,106 @@ function deleteCommentForUser(PDO $dbconn, int $userId, int $commentId): bool
     $stmt = $dbconn->prepare("DELETE FROM `{$meta['table']}` WHERE `{$meta['id_column']}` = ?");
     $stmt->execute([$commentId]);
     return $stmt->rowCount() > 0;
+}
+
+function listUsersForAdmin(PDO $dbconn): array
+{
+    $meta = getUserTableMeta($dbconn);
+    if ($meta === null) {
+        return [];
+    }
+
+    $columns = getTableColumns($dbconn, $meta['table']);
+    $roleColumn = findColumn($columns, ['roll', 'role', 'is_admin', 'admin', 'behorighet']);
+    $ageColumn = findColumn($columns, ['alder', 'age']);
+
+    $selectRole = $roleColumn !== null ? "u.`{$roleColumn}` AS role_value" : "0 AS role_value";
+    $selectAge = $ageColumn !== null ? "u.`{$ageColumn}` AS age_value" : "NULL AS age_value";
+
+    $sql = "
+        SELECT
+            u.`{$meta['id_column']}` AS user_id,
+            u.`{$meta['name_column']}` AS username,
+            {$selectRole},
+            {$selectAge}
+        FROM `{$meta['table']}` u
+        ORDER BY u.`{$meta['id_column']}` ASC
+    ";
+
+    $stmt = $dbconn->query($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+function deleteUserAndAllData(PDO $dbconn, int $targetUserId, int $actorUserId): bool
+{
+    if (!userHasAdminAccess($dbconn, $actorUserId)) {
+        return false;
+    }
+
+    if ($targetUserId <= 0 || $targetUserId === $actorUserId) {
+        return false;
+    }
+
+    $meta = getUserTableMeta($dbconn);
+    if ($meta === null) {
+        return false;
+    }
+
+    $profile = getUserProfileData($dbconn, $targetUserId);
+
+    $postMeta = getPostTableMeta($dbconn);
+    $postIds = [];
+    if ($postMeta !== null) {
+        $stmt = $dbconn->prepare("SELECT `{$postMeta['id_column']}` FROM `{$postMeta['table']}` WHERE `{$postMeta['creator_column']}` = ?");
+        $stmt->execute([$targetUserId]);
+        $postIds = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
+    }
+
+    foreach ($postIds as $postId) {
+        deletePostAsAdmin($dbconn, $postId);
+    }
+
+    $commentsMeta = getCommentTableMeta($dbconn);
+    if ($commentsMeta !== null) {
+        $deleteComments = $dbconn->prepare("DELETE FROM `{$commentsMeta['table']}` WHERE `{$commentsMeta['author_column']}` = ?");
+        $deleteComments->execute([$targetUserId]);
+    }
+
+    $likesTable = resolveTableName($dbconn, ['likes', 'user_likes']);
+    if ($likesTable !== null) {
+        $likesColumns = getTableColumns($dbconn, $likesTable);
+        $likesUserColumn = findColumn($likesColumns, ['user_id', 'creator_id']);
+        if ($likesUserColumn !== null) {
+            $deleteLikes = $dbconn->prepare("DELETE FROM `{$likesTable}` WHERE `{$likesUserColumn}` = ?");
+            $deleteLikes->execute([$targetUserId]);
+        }
+    }
+
+    $deleteUser = $dbconn->prepare("DELETE FROM `{$meta['table']}` WHERE `{$meta['id_column']}` = ?");
+    $deleteUser->execute([$targetUserId]);
+    $deleted = $deleteUser->rowCount() > 0;
+
+    if ($deleted && $profile !== null) {
+        $paths = [
+            $profile['avatar_path'] ?? null,
+            $profile['background_path'] ?? null,
+        ];
+        foreach ($paths as $path) {
+            if (!is_string($path) || trim($path) === '') {
+                continue;
+            }
+
+            $normalized = str_replace('\\', '/', $path);
+            if (strpos($normalized, 'uploads/') !== 0) {
+                continue;
+            }
+
+            $absolute = __DIR__ . '/../public/' . $normalized;
+            if (is_file($absolute)) {
+                @unlink($absolute);
+            }
+        }
+    }
+
+    return $deleted;
 }

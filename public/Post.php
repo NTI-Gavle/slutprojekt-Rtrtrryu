@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $pageTitle = "Make a post";
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
@@ -65,7 +65,7 @@ if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] !== UPLOAD_ERR_
 }
 ?>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/base/style.css">
 
 <div class="post-window">
     <form class="post-form" method="POST" action="Post.php" enctype="multipart/form-data">

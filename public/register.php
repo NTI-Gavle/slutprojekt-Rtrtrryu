@@ -1,49 +1,39 @@
 <?php
-
 session_start();
 
-if(!(isset($_POST["namn"]) && isset($_POST["lösenord"]) && isset($_POST["ålder"])))
-{
+if (!isset($_POST["username"], $_POST["password"], $_POST["age"])) {
     header("Location: registerpage.php");
+    exit;
 }
 
-include("../database/db.php");
+require __DIR__ . "/../database/db.php";
 
+$user = (string) $_POST["username"];
+$pass = (string) $_POST["password"];
+$age = (int) $_POST["age"];
 
-$user = $_POST["namn"];
-$pass = $_POST["lösenord"];
-$age = $_POST["ålder"];
+if ($age < 1) {
+    $_SESSION["Registererror"] = "Age must be a positive number";
+    header("Location: registerpage.php");
+    exit;
+}
 
-$sql = "SELECT * FROM användare where namn=?";
+$sql = "SELECT * FROM användare WHERE namn = ?";
 $stmt = $dbconn->prepare($sql);
-
-// parameters in array, if empty we could skip the $data-variable
-$data = array($user);
-$stmt->execute($data);
+$stmt->execute([$user]);
 
 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if(!empty($result))
-{
-    $_SESSION["Registererror"] =  "User already exists";
-    header("Location: register.php");
-    die();
+if (!empty($result)) {
+    $_SESSION["Registererror"] = "User already exists";
+    header("Location: registerpage.php");
+    exit;
 }
 
-$user = $_POST["namn"];
-$pass = $_POST["lösenord"];
-$age = $_POST["ålder"];
-
-$sql = "INSERT INTO användare (namn,lösenord,ålder) VALUES (?,?,?)";
+$sql = "INSERT INTO användare (namn, lösenord, ålder) VALUES (?, ?, ?)";
 $stmt = $dbconn->prepare($sql);
-
-// parameters in array, if empty we could skip the $data-variable
-$data = array($user, password_hash($pass,PASSWORD_DEFAULT),$age);
-
-$stmt->execute(params: $data);
+$stmt->execute([$user, password_hash($pass, PASSWORD_DEFAULT), $age]);
 
 $_SESSION["RegisterSuccess"] = "Registration succsess";
-
 header("Location: login.php");
-
-
+exit;

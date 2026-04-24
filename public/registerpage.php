@@ -1,48 +1,42 @@
-<?php
+﻿<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-use Dom\Document;
-    require_once __DIR__ . '/../includes/header.php';
-    
-    $errormsg="";
-    if(isset($_SESSION["Registererror"])){
-        $errormsg=$_SESSION["Registererror"];
-        unset($_SESSION["Registererror"]);
-    }
-    
+$pageTitle = "Register";
+
+$errormsg = "";
+if (isset($_SESSION["Registererror"])) {
+    $errormsg = $_SESSION["Registererror"];
+    unset($_SESSION["Registererror"]);
+}
+
+$extraStyles = ['css/auth/login.css'];
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/login.css">
-</head>
-<body>
-    
-    
-<div class="Login">
+<div class="Login auth-page">
     <h1>Skapa ett konto</h1>
     <form action="register.php" method="post" class="submit">
         username:
-        <input type="text" name="namn" class="input <?php if ($errormsg!="") echo "Error"; ?>" id="name"><br>
+        <input type="text" name="username" class="input <?php if ($errormsg != "") echo "Error"; ?>" id="name"><br>
         password:
-        <input type="password" name="lösenord" class="input <?php if ($errormsg!="") echo "Error"; ?>" id="password"><br>
+        <input type="password" name="password" class="input <?php if ($errormsg != "") echo "Error"; ?>" id="password"><br>
         Age:
-        <input type="text" name="ålder" class="input" <?php if ($errormsg!="") echo "Error"; ?> id="age"><br>
-        <button type="submit">Login</button><br>
-        
+        <input type="number" name="age" min="1" step="1" class="input <?php if ($errormsg != "") echo "Error"; ?>" id="age"><br>
+        <button type="submit">Register</button><br>
+
         har du redan ett konto?<br>
-        <div class="link"><a>Tryck</a> <a href="login.php">här</a></div>
+        <div class="link"><a href="login.php">Tryck här</a></div>
     </form>
 
-<?php
-    if($errormsg!=""){
-        echo "<p class='Errormsg'>". $errormsg . "</p>";
-        
+    <?php
+    if ($errormsg != "") {
+        echo "<p class='Errormsg'>" . htmlspecialchars($errormsg) . "</p>";
     }
-?>
+    ?>
+</div>
 
-</body>
-</html>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
+

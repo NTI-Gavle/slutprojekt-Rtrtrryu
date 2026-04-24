@@ -37,7 +37,11 @@ $hasMore = $totalComments > $initialLimit;
             <?php else: ?>
               <div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>
             <?php endif; ?>
-            <div class="small mt-1"><?php echo htmlspecialchars($c['username']); ?></div>
+            <div class="small mt-1">
+              <a href="Profile.php?user_id=<?php echo (int) ($c['author_id'] ?? 0); ?>" class="text-decoration-none text-reset">
+                <?php echo htmlspecialchars($c['username']); ?>
+              </a>
+            </div>
           </div>
           <div class="flex-grow-1 comment-content">
             <p class="mb-1 comment-body"><?php echo nl2br(htmlspecialchars($c['body'])); ?></p>
@@ -88,7 +92,7 @@ function renderComment(c) {
     div.innerHTML = `
         <div class="text-center" style="min-width:72px;">
             ${avatarHtml}
-            <div class="small mt-1">${escapeHtml(c.username)}</div>
+            <div class="small mt-1"><a href="Profile.php?user_id=${Number(c.author_id || 0)}" class="text-decoration-none text-reset">${escapeHtml(c.username)}</a></div>
         </div>
         <div class="flex-grow-1 comment-content">
             <p class="mb-1 comment-body">${escapeHtml(c.body).replace(/\n/g, '<br>')}</p>
