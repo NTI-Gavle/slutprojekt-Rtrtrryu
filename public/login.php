@@ -20,8 +20,10 @@ if (isset($_SESSION["RegisterSuccess"])) {
 $extraStyles = ['css/auth/login.css'];
 require_once __DIR__ . '/../includes/header.php';
 ?>
+<body class="bg-dark">
+    
 
-<div class="Login auth-page">
+<div class="Login auth-page text-light">
     <form action="loginbackend.php" method="post" class="submit">
         <h1>Logga in</h1>
         username:
@@ -44,7 +46,7 @@ require_once __DIR__ . '/../includes/header.php';
     }
     ?>
 </div>
-
+</body>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
 

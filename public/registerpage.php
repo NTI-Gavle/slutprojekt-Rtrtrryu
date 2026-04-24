@@ -14,8 +14,10 @@ if (isset($_SESSION["Registererror"])) {
 $extraStyles = ['css/auth/login.css'];
 require_once __DIR__ . '/../includes/header.php';
 ?>
+<body class="bg-dark">
+    
 
-<div class="Login auth-page">
+<div class="Login auth-page text-light">
     <h1>Skapa ett konto</h1>
     <form action="register.php" method="post" class="submit">
         username:
@@ -36,7 +38,7 @@ require_once __DIR__ . '/../includes/header.php';
     }
     ?>
 </div>
-
+</body>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
 

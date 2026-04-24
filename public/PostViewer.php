@@ -59,9 +59,9 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
     <link rel="stylesheet" href="css/pages/postviewer.css">
     <script src="js/app.js" defer></script>
 </head>
-<body onload="RefreshLikes(<?php echo (int)$postId; ?>)">
+<body onload="RefreshLikes(<?php echo (int)$postId; ?>)" style="background-color: darkmagenta">
 
-<div class="container py-4">
+<div class="container py-4" style="background-color: darkviolet;">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm position-relative">

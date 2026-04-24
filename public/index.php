@@ -58,11 +58,11 @@ if ($postsTable !== null && $userMeta !== null) {
     }
 }
 ?>
-<body>
+<body style="background-color: darkmagenta">
 
 <link rel="stylesheet" href="css/base/style.css">
 
-<div class="container py-4">
+<div class="container py-4" style="background-color: darkviolet;">
     <div><?php include('../includes/menu.php'); ?></div>
 
     <div class="post-window">
