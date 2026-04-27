@@ -217,9 +217,10 @@ const SiteApp = (() => {
   }
 
   function initPageFeatures() {
-    const body = document.body;
-    if (body?.dataset?.postId) {
-      refreshLikes(body.dataset.postId);
+    const postMarker = document.querySelector('[data-post-id]');
+    const postId = postMarker?.dataset?.postId || document.body?.dataset?.postId;
+    if (postId) {
+      refreshLikes(postId);
     }
 
     document.addEventListener('click', (event) => {
@@ -248,16 +249,6 @@ const SiteApp = (() => {
       if (action === 'delete-comment') {
         event.preventDefault();
         deleteComment(actionTarget.dataset.commentId);
-      }
-    });
-
-    document.addEventListener('submit', (event) => {
-      const form = event.target.closest('form[data-confirm]');
-      if (!form) return;
-
-      const message = form.dataset.confirm || 'Are you sure?';
-      if (!confirm(message)) {
-        event.preventDefault();
       }
     });
 

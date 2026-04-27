@@ -1,4 +1,7 @@
-﻿<?php
+<?php
+$pageTitle = "Post Viewer";
+$bodyStyle = 'background-color: darkmagenta';
+$extraStyles = ['css/pages/postviewer.css'];
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
 require_once __DIR__ . '/../database/user_queries.php';
@@ -47,21 +50,8 @@ if (!$post) {
 
 $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$userIsAdult);
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Viewer</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/base/style.css">
-    <link rel="stylesheet" href="css/pages/postviewer.css">
-    <script src="js/app.js" defer></script>
-</head>
-<body data-post-id="<?php echo (int)$postId; ?>" style="background-color: darkmagenta">
-
-<div class="container py-4" style="background-color: darkviolet;">
+<div class="container py-4" style="background-color: darkviolet;" data-post-id="<?php echo (int) $postId; ?>">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm position-relative">
@@ -104,16 +94,18 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                         </div>
                     </div>
 
-                    <div class="likebox">
-                        <p id="like_counter" class="counter"></p>
-                        <button
-                            type="button"
-                            id="like"
-                            class="btn btn-outline-danger"
-                            data-action="like"
-                            data-post-id="<?php echo (int)$postId; ?>">
-                        </button>
-                    </div>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <div class="likebox">
+                            <p id="like_counter" class="counter"></p>
+                            <button
+                                type="button"
+                                id="like"
+                                class="btn btn-outline-danger"
+                                data-action="like"
+                                data-post-id="<?php echo (int)$postId; ?>">
+                            </button>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <?php if ($restricted): ?>
@@ -129,7 +121,6 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
             </div>
 
             <?php include __DIR__ . '/../includes/post-comments.php'; ?>
-
         </div>
     </div>
 </div>
@@ -138,7 +129,4 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
     <img id="lightboxImg" src="" alt="Zoomed image">
 </div>
 
-</body>
-</html>
-
-
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

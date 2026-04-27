@@ -510,16 +510,41 @@ html, body {
 }
 
 .likebox{
-    width: 50px;
+    min-width: 72px;
+    min-height: 58px;
+    width: fit-content;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 6px;
     border: solid;
     border-radius: 10px;
     border-color: red;
+}
+.like-toggle {
+    width: 100%;
+    min-width: 88px;
+    min-height: 64px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.like-heart {
+    font-size: 2.1rem;
+    color: #dc3545;
+    line-height: 1;
+    display: block;
 }
 .counter{
     display: flex;
     align-items: center;
     justify-content: center;
     margin:0;
+    min-height: 1.1em;
 } 
 .profilepic{
     width: 50px;

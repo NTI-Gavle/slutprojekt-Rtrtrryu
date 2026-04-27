@@ -3,11 +3,9 @@ session_start();
 
 include('../database/db.php');
 
-
 if (!isset($_GET['post_id'])){
     die('Post Does not exist');
 }
-
 
 $stmt = $dbconn->prepare('SELECT * FROM likes WHERE user_id = ? AND post_id = ?');
 $stmt->execute([$_SESSION['user_id'], $_GET['post_id']]);
