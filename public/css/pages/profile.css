@@ -11,7 +11,7 @@
 }
 
 .profile-page .profile-top-banner {
-    height: 150px;
+    height: 300px;
     border-bottom: 1px solid #dbe0e6;
     background: #e8ecf1;
     display: flex;
@@ -24,14 +24,14 @@
 
 .profile-page .profile-banner-image {
     width: 100%;
-    height: 100%;
+    height: 200%;
     object-fit: cover;
     display: block;
 }
 
 .profile-page .profile-avatar-wrap {
     position: absolute;
-    top: 70px;
+    top: 170px;
     right: 22px;
     z-index: 2;
 }
