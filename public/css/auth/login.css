@@ -68,3 +68,19 @@ button{
 .succsesmsg{
     color: greenyellow;
 }
+.auth-fixed-header .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 3000;
+}
+
+.auth-fixed-header {
+    padding-top: 120px;
+}
+
+.auth-fixed-header .auth-page {
+    min-height: calc(100vh - 120px);
+}

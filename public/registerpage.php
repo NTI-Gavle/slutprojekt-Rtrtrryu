@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $pageTitle = 'Register';
-$bodyClass = 'bg-dark';
+$bodyClass = 'bg-dark auth-fixed-header';
 $extraStyles = ['css/auth/login.css'];
 
 $errormsg = '';
@@ -28,7 +28,7 @@ require_once __DIR__ . '/../includes/header.php';
         <button type="submit">Register</button><br>
 
         har du redan ett konto?<br>
-        <div class="link"><a href="login.php">Tryck h�r</a></div>
+        <div class="link"><a href="login.php">Tryck här</a></div>
     </form>
 
     <?php

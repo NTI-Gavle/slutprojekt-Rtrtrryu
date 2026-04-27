@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -18,7 +18,7 @@ if (isset($_SESSION['user_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- TEST -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'My Home Project' ?></title>
@@ -35,7 +35,11 @@ if (isset($_SESSION['user_id'])) {
     <!-- JS -->
     <script src="js/app.js" defer></script>
 </head>
-<body<?php echo isset($bodyClass) ? ' class="' . htmlspecialchars((string) $bodyClass) . '"' : ''; ?><?php echo isset($bodyStyle) ? ' style="' . htmlspecialchars((string) $bodyStyle) . '"' : ''; ?>>
+
+<body <?php echo isset($bodyClass) ? ' class="' . htmlspecialchars((string) $bodyClass) . '"' : ''; ?>
+    <?php echo isset($bodyStyle) ? ' style="' . htmlspecialchars((string) $bodyStyle) . '"' : ''; ?>>
+
+
 <header id="header" class="site-header">
     <div class="header-container">
         <div class="header-user">
