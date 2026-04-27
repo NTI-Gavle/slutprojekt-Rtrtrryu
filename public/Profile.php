@@ -1,5 +1,7 @@
-﻿<?php
+<?php
 $pageTitle = "Profile";
+$bodyStyle = 'background-color: darkmagenta';
+$extraStyles = ['css/pages/profile.css'];
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
 require_once __DIR__ . '/../database/user_queries.php';
@@ -126,11 +128,8 @@ $profileDescription = trim((string) ($profile['description'] ?? ''));
 $pfpPath = $profile['avatar_path'] ?? null;
 $backgroundPath = $profile['background_path'] ?? null;
 ?>
-<body style="background-color: darkmagenta">
     
 
-<link rel="stylesheet" href="css/base/style.css">
-<link rel="stylesheet" href="css/pages/profile.css">
 <div class="container py-4 profile-page" style="background-color: darkviolet;">
     <div class="profile-shell">
         <div class="profile-top-banner">
@@ -244,7 +243,6 @@ $backgroundPath = $profile['background_path'] ?? null;
         </div>
     </div>
 </div>
-</body>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
 

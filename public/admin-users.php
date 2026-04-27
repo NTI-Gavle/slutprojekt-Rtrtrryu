@@ -1,5 +1,6 @@
-﻿<?php
+<?php
 $pageTitle = "Manage Users";
+$extraStyles = [];
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
 require_once __DIR__ . '/../database/user_queries.php';
@@ -52,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user_id'])) {
 $users = listUsersForAdmin($dbconn);
 ?>
 
-<link rel="stylesheet" href="css/base/style.css">
 
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -104,7 +104,7 @@ $users = listUsersForAdmin($dbconn);
                 <?php if ($isSelf): ?>
                   <span class="text-muted small">Current account</span>
                 <?php else: ?>
-                  <form method="POST" action="admin-users.php" class="d-inline" onsubmit="return confirm('Delete this user and all their data?');">
+                    <form method="POST" action="admin-users.php" class="d-inline" data-confirm="Delete this user and all their data?">
                     <input type="hidden" name="delete_user_id" value="<?php echo $uid; ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars((string) $_SESSION['csrf_token']); ?>">
                     <button type="submit" class="btn btn-sm btn-danger">Delete user</button>

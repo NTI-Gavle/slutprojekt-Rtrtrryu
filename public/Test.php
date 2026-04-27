@@ -127,7 +127,6 @@ $visibleComments = array_slice($normalizedComments, $offset, $commentsPerPage);
     <title><?= htmlspecialchars($post['title']) ?></title>
     <link rel="stylesheet" href="Test.css">
 </head>
-<body>
     <main class="page">
         <article class="post-card">
             <div class="poster-badge"><?= htmlspecialchars($post['poster']) ?></div>
@@ -196,5 +195,4 @@ $visibleComments = array_slice($normalizedComments, $offset, $commentsPerPage);
             </section>
         </article>
     </main>
-</body>
-</html>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

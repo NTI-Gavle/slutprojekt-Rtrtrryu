@@ -1,11 +1,13 @@
-﻿.profile-page .profile-shell {
+.profile-page .profile-shell {
     position: relative;
     border: 1px solid #dbe0e6;
     background: #f5f7fa;
     border-radius: 14px;
     max-width: 980px;
+    width: 100%;
     margin: 0 auto;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .profile-page .profile-top-banner {
@@ -50,6 +52,7 @@
     grid-template-columns: 2fr 1fr;
     gap: 28px;
     padding: 52px 34px 26px;
+    box-sizing: border-box;
 }
 
 .profile-page .profile-left-stack {
@@ -62,6 +65,8 @@
     background: #fff;
     border-radius: 12px;
     padding: 14px;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .profile-page .profile-liked {
@@ -116,6 +121,7 @@
 
 .profile-page .profile-description {
     min-height: 300px;
+    min-width: 0;
 }
 
 .profile-page .profile-edit-form {
@@ -126,6 +132,9 @@
 .profile-page .profile-edit-form textarea,
 .profile-page .profile-edit-form input {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     border: 2px solid #000;
     background: #f8f8f8;
     padding: 8px;
@@ -151,6 +160,10 @@
 .profile-page .profile-feedback.error { background: #ffd8d8; }
 
 @media (max-width: 992px) {
+    .profile-page .profile-shell {
+        overflow: hidden;
+    }
+
     .profile-page .profile-avatar-wrap {
         right: 12px;
         top: 85px;
@@ -164,12 +177,56 @@
     .profile-page .profile-content {
         grid-template-columns: 1fr;
         gap: 14px;
-        padding: 48px 12px 14px;
+        padding: 48px 10px 14px;
+    }
+
+    .profile-page .profile-content > * {
+        min-width: 0;
     }
 
     .profile-page .profile-liked,
     .profile-page .profile-description {
         min-height: 170px;
         max-height: none;
+    }
+
+    .profile-page .profile-description {
+        overflow: hidden;
+    }
+
+    .profile-page .profile-edit-form input[type="file"] {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-page {
+        overflow-x: hidden;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .profile-page .profile-top-banner {
+        height: 120px;
+    }
+
+    .profile-page .profile-avatar-wrap {
+        top: 72px;
+        right: 10px;
+    }
+
+    .profile-page .profile-avatar {
+        width: 112px;
+        height: 112px;
+    }
+
+    .profile-page .profile-content {
+        padding: 42px 8px 12px;
+    }
+
+    .profile-page .profile-edit-form textarea,
+    .profile-page .profile-edit-form input {
+        font-size: 16px;
     }
 }

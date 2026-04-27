@@ -18,16 +18,16 @@ if (isset($_SESSION["RegisterSuccess"])) {
 }
 
 $extraStyles = ['css/auth/login.css'];
+$bodyClass = 'bg-dark';
 require_once __DIR__ . '/../includes/header.php';
 ?>
-<body class="bg-dark">
     
 
 <div class="Login auth-page text-light">
     <form action="loginbackend.php" method="post" class="submit">
         <h1>Logga in</h1>
         username:
-        <input type="text" name="username" class="input <?php if ($errormsg != "") echo "Error"; ?> <?php if ($succsesmsg != "") echo "Succses"; ?>" id="name"><br>
+        <input type="text" name="username" maxlength="25" class="input <?php if ($errormsg != "") echo "Error"; ?> <?php if ($succsesmsg != "") echo "Succses"; ?>" id="name"><br>
         password:
         <input type="password" name="password" class="input <?php if ($errormsg != "") echo "Error"; ?> <?php if ($succsesmsg != "") echo "Succses"; ?>" id="password"><br>
         <button type="submit">Login</button>
@@ -46,7 +46,5 @@ require_once __DIR__ . '/../includes/header.php';
     }
     ?>
 </div>
-</body>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-
 

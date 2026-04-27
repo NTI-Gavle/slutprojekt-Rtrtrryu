@@ -1,5 +1,6 @@
-﻿<?php
+<?php
 $pageTitle = "Home";
+$bodyStyle = 'background-color: darkmagenta';
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
 require_once __DIR__ . '/../database/user_queries.php';
@@ -58,9 +59,7 @@ if ($postsTable !== null && $userMeta !== null) {
     }
 }
 ?>
-<body style="background-color: darkmagenta">
 
-<link rel="stylesheet" href="css/base/style.css">
 
 <div class="container py-4" style="background-color: darkviolet;">
     <div><?php include('../includes/menu.php'); ?></div>
@@ -88,9 +87,10 @@ if ($postsTable !== null && $userMeta !== null) {
         <?php foreach ($posts as $post): ?>
             <?php $restricted = !empty($post['adultcheck']) && ($currentUserId <= 0 || !$userIsAdult); ?>
             <?php $canDeletePost = $currentUserId > 0 && ($isAdmin || (int) ($post['creator_id'] ?? 0) === $currentUserId); ?>
-            <div class="post feed-post shadow-sm position-relative" role="link" tabindex="0" onclick="if(!event.target.closest('a,button,form')) { window.location.href='PostViewer.php?post_id=<?php echo (int) $post['id']; ?>'; }" onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); window.location.href='PostViewer.php?post_id=<?php echo (int) $post['id']; ?>'; }">
+            <div class="post feed-post shadow-sm position-relative">
+                <a href="PostViewer.php?post_id=<?php echo (int) $post['id']; ?>" class="post-open-link" aria-label="Open post"></a>
                 <?php if ($canDeletePost): ?>
-                    <form method="POST" action="index.php" class="admin-delete-form" onsubmit="return confirm('Delete this post?');">
+                    <form method="POST" action="index.php" class="admin-delete-form" data-confirm="Delete this post?">
                         <input type="hidden" name="delete_post_id" value="<?php echo (int) $post['id']; ?>">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars((string) $_SESSION['csrf_token']); ?>">
                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
@@ -142,6 +142,4 @@ if ($postsTable !== null && $userMeta !== null) {
 
     </div>
 </div>
-</body>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-

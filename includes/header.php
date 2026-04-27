@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -35,19 +35,22 @@ if (isset($_SESSION['user_id'])) {
     <!-- JS -->
     <script src="js/app.js" defer></script>
 </head>
-<body>
+<body<?php echo isset($bodyClass) ? ' class="' . htmlspecialchars((string) $bodyClass) . '"' : ''; ?><?php echo isset($bodyStyle) ? ' style="' . htmlspecialchars((string) $bodyStyle) . '"' : ''; ?>>
 <header id="header" class="site-header">
-<?php
-if (isset($_SESSION["user_id"])) {
-    if (!empty($headerAvatarPath)) {
-        echo '<img src="' . htmlspecialchars($headerAvatarPath) . '" alt="Profile picture" class="profilepic rounded-circle">';
-    } else {
-        echo '<div class="profilepic rounded-circle text-white">Pfp</div>';
-    }
-    echo htmlspecialchars((string) $_SESSION["username"]);
-}
-?>
     <div class="header-container">
+        <div class="header-user">
+            <?php if (isset($_SESSION["user_id"])): ?>
+                <a href="Profile.php" class="header-user-link text-decoration-none text-white">
+                    <?php if (!empty($headerAvatarPath)): ?>
+                        <img src="<?php echo htmlspecialchars($headerAvatarPath); ?>" alt="Profile picture" class="profilepic rounded-circle">
+                    <?php else: ?>
+                        <div class="profilepic rounded-circle text-white">Pfp</div>
+                    <?php endif; ?>
+                    <span><?php echo htmlspecialchars((string) $_SESSION["username"]); ?></span>
+                </a>
+            <?php endif; ?>
+        </div>
+
         <h1 class="site-title">
             <a href="index.php">Rule 89</a>
         </h1>
@@ -55,8 +58,5 @@ if (isset($_SESSION["user_id"])) {
         <?php require __DIR__ . '/nav.php'; ?>
     </div>
 </header>
-
-
-
 
 

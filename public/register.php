@@ -12,6 +12,12 @@ $user = (string) $_POST["username"];
 $pass = (string) $_POST["password"];
 $age = (int) $_POST["age"];
 
+if (mb_strlen($user) > 25) {
+    $_SESSION["Registererror"] = "Username must be 25 characters or fewer";
+    header("Location: registerpage.php");
+    exit;
+}
+
 if ($age < 1) {
     $_SESSION["Registererror"] = "Age must be a positive number";
     header("Location: registerpage.php");
