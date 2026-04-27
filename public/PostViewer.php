@@ -1,6 +1,4 @@
-<?php
-$bodyStyle = 'background-color: darkmagenta';
-$extraStyles = ['css/pages/postviewer.css'];
+﻿<?php
 require_once __DIR__ . '/../includes/header.php';
 include('../database/db.php');
 require_once __DIR__ . '/../database/user_queries.php';
@@ -49,7 +47,21 @@ if (!$post) {
 
 $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$userIsAdult);
 ?>
-<div class="container py-4" style="background-color: darkviolet;" data-post-id="<?php echo (int)$postId; ?>">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Viewer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/base/style.css">
+    <link rel="stylesheet" href="css/pages/postviewer.css">
+    <script src="js/app.js" defer></script>
+</head>
+<body data-post-id="<?php echo (int)$postId; ?>" style="background-color: darkmagenta">
+
+<div class="container py-4" style="background-color: darkviolet;">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm position-relative">
@@ -126,4 +138,7 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
     <img id="lightboxImg" src="" alt="Zoomed image">
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+</body>
+</html>
+
+

@@ -217,12 +217,9 @@ const SiteApp = (() => {
   }
 
   function initPageFeatures() {
-    const postHost = document.body?.dataset?.postId
-      ? document.body
-      : document.querySelector('[data-post-id]');
-
-    if (postHost?.dataset?.postId) {
-      refreshLikes(postHost.dataset.postId);
+    const body = document.body;
+    if (body?.dataset?.postId) {
+      refreshLikes(body.dataset.postId);
     }
 
     document.addEventListener('click', (event) => {
