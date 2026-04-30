@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database/db.php';
-require_once __DIR__ . '/../database/user_queries.php';
+require_once __DIR__ . '/../../database/db.php';
+require_once __DIR__ . '/../../database/user_queries.php';
 header('Content-Type: application/json');
 
 $postId = filter_input(INPUT_GET, 'post_id', FILTER_VALIDATE_INT);
@@ -28,3 +28,4 @@ echo json_encode([
   'comments' => $comments,
   'hasMore' => ($offset + count($comments)) < $total
 ]);
+

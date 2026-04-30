@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/db.php';
 
 function normalizeIdentifier(string $value): string
@@ -359,7 +359,7 @@ function getUserAge(PDO $dbconn, int $userId): int
     }
 
     $columns = getTableColumns($dbconn, $meta['table']);
-    $ageColumn = findColumn($columns, ['ålder', 'alder', 'age']);
+    $ageColumn = findColumn($columns, ['Ã¥lder', 'ålder', 'alder', 'lder', 'age']);
     if ($ageColumn === null) {
         return 0;
     }
@@ -621,7 +621,7 @@ function listUsersForAdmin(PDO $dbconn): array
 
     $columns = getTableColumns($dbconn, $meta['table']);
     $roleColumn = findColumn($columns, ['roll', 'role', 'is_admin', 'admin', 'behorighet']);
-    $ageColumn = findColumn($columns, ['ålder', 'alder', 'age']);
+    $ageColumn = findColumn($columns, ['Ã¥lder', 'ålder', 'alder', 'lder', 'age']);
 
     $selectRole = $roleColumn !== null ? "u.`{$roleColumn}` AS role_value" : "0 AS role_value";
     $selectAge = $ageColumn !== null ? "u.`{$ageColumn}` AS age_value" : "NULL AS age_value";
@@ -713,4 +713,5 @@ function deleteUserAndAllData(PDO $dbconn, int $targetUserId, int $actorUserId):
 
     return $deleted;
 }
+
 

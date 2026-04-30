@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database/db.php';
-require_once __DIR__ . '/../database/user_queries.php';
+require_once __DIR__ . '/../../database/db.php';
+require_once __DIR__ . '/../../database/user_queries.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
@@ -24,3 +24,4 @@ if (!$deleted) {
 }
 
 echo json_encode(['ok' => true]);
+

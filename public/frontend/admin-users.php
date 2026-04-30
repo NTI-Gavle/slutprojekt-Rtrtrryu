@@ -1,9 +1,9 @@
 <?php
 $pageTitle = "Manage Users";
 $extraStyles = [];
-require_once __DIR__ . '/../includes/header.php';
-include('../database/db.php');
-require_once __DIR__ . '/../database/user_queries.php';
+require_once __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../database/db.php';
+require_once __DIR__ . '/../../database/user_queries.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -14,7 +14,7 @@ $currentUserId = (int) $_SESSION['user_id'];
 if (!userHasAdminAccess($dbconn, $currentUserId)) {
     http_response_code(403);
     echo '<div class="container py-4"><div class="alert alert-danger">Access denied.</div></div>';
-    require_once __DIR__ . '/../includes/footer.php';
+    require_once __DIR__ . '/../../includes/footer.php';
     exit;
 }
 
@@ -119,5 +119,6 @@ $users = listUsersForAdmin($dbconn);
   </div>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+
 

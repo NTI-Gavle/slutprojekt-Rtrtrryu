@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include('../database/db.php');
+require_once __DIR__ . '/../../database/db.php';
 
 if (!isset($_GET['post_id'])){
     die('Post Does not exist');
@@ -23,3 +23,4 @@ else
     $stmt->execute([$_SESSION['user_id'], $_GET['post_id']]);
     echo('unliked');
 }
+

@@ -2,9 +2,9 @@
 $pageTitle = "Profile";
 $bodyStyle = 'background-color: darkmagenta';
 $extraStyles = ['css/pages/profile.css'];
-require_once __DIR__ . '/../includes/header.php';
-include('../database/db.php');
-require_once __DIR__ . '/../database/user_queries.php';
+require_once __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../database/db.php';
+require_once __DIR__ . '/../../database/user_queries.php';
 
 function saveProfileImageUpload(string $fieldName, string $prefix, ?string &$errorMessage): ?string
 {
@@ -38,7 +38,7 @@ function saveProfileImageUpload(string $fieldName, string $prefix, ?string &$err
         return null;
     }
 
-    $uploadDir = __DIR__ . '/uploads/profile/';
+    $uploadDir = __DIR__ . '/../uploads/profile/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -68,7 +68,7 @@ $profile = getUserProfileData($dbconn, (int) $profileUserId);
 if ($profile === null) {
     http_response_code(404);
     echo '<div class="container py-4"><p>Profile not found.</p></div>';
-    require_once __DIR__ . '/../includes/footer.php';
+    require_once __DIR__ . '/../../includes/footer.php';
     exit();
 }
 
@@ -134,7 +134,7 @@ $backgroundPath = $profile['background_path'] ?? null;
     <div class="profile-shell">
         <div class="profile-top-banner">
             <?php if (!empty($backgroundPath)): ?>
-                <img src="<?php echo htmlspecialchars((string) $backgroundPath); ?>" alt="Background image" class="profile-banner-image">
+                <img src="<?php echo htmlspecialchars(site_asset_url((string) $backgroundPath)); ?>" alt="Background image" class="profile-banner-image">
             <?php else: ?>
                 <span>Background image</span>
             <?php endif; ?>
@@ -142,7 +142,7 @@ $backgroundPath = $profile['background_path'] ?? null;
 
         <div class="profile-avatar-wrap">
             <?php if (!empty($pfpPath)): ?>
-                <img src="<?php echo htmlspecialchars($pfpPath); ?>" alt="Profile picture" class="profile-avatar">
+                <img src="<?php echo htmlspecialchars(site_asset_url((string) $pfpPath)); ?>" alt="Profile picture" class="profile-avatar">
             <?php else: ?>
                 <div class="profile-avatar d-flex align-items-center justify-content-center text-white">Pfp</div>
             <?php endif; ?>
@@ -243,6 +243,7 @@ $backgroundPath = $profile['background_path'] ?? null;
         </div>
     </div>
 </div>
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+
 
 

@@ -2,9 +2,9 @@
 $pageTitle = "Post Viewer";
 $bodyStyle = 'background-color: darkmagenta';
 $extraStyles = ['css/pages/postviewer.css'];
-require_once __DIR__ . '/../includes/header.php';
-include('../database/db.php');
-require_once __DIR__ . '/../database/user_queries.php';
+require_once __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../database/db.php';
+require_once __DIR__ . '/../../database/user_queries.php';
 
 $userIsAdult = false;
 if (isset($_SESSION['user_id'])) {
@@ -57,12 +57,12 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
             <div class="card shadow-sm position-relative">
                 <div class="card-body">
                     <div class="<?php echo $restricted ? 'blurred' : ''; ?>">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <?php if (!empty($post['avatar_path'])): ?>
-                                <img src="<?php echo htmlspecialchars((string) $post['avatar_path']); ?>" alt="Profile picture" class="post-author-avatar">
-                            <?php else: ?>
-                                <div class="post-author-avatar post-author-avatar-fallback">Pfp</div>
-                            <?php endif; ?>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <?php if (!empty($post['avatar_path'])): ?>
+                            <img src="<?php echo htmlspecialchars(site_asset_url((string) $post['avatar_path'])); ?>" alt="Profile picture" class="post-author-avatar">
+                        <?php else: ?>
+                            <div class="post-author-avatar post-author-avatar-fallback">Pfp</div>
+                        <?php endif; ?>
                             <a href="Profile.php?user_id=<?php echo (int) ($post['creator_id'] ?? 0); ?>" class="text-muted text-decoration-none">
                                 @<?php echo htmlspecialchars((string) ($post['username'] ?? 'unknown')); ?>
                             </a>
@@ -85,7 +85,7 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                             <?php if (!empty($post['image_path'])): ?>
                                 <div class="col-md-6">
                                     <img
-                                        src="<?php echo htmlspecialchars((string) $post['image_path']); ?>"
+                                        src="<?php echo htmlspecialchars(site_asset_url((string) $post['image_path'])); ?>"
                                         alt="Post image"
                                         class="img-fluid rounded post-image-preview w-100"
                                     >
@@ -120,7 +120,7 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
                 <?php endif; ?>
             </div>
 
-            <?php include __DIR__ . '/../includes/post-comments.php'; ?>
+            <?php include __DIR__ . '/../../includes/post-comments.php'; ?>
         </div>
     </div>
 </div>
@@ -129,4 +129,5 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
     <img id="lightboxImg" src="" alt="Zoomed image">
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

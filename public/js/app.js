@@ -4,6 +4,11 @@ const SiteApp = (() => {
   const SVG_HEART_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill mx-auto my-auto" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/></svg>';
   const SVG_HEART_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16"><path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/></svg>';
   const COMMENT_LIMIT = 5;
+  const PAGE_BASE = window.location.pathname.replace(/\\/g, '/').includes('/frontend/') || window.location.pathname.replace(/\\/g, '/').includes('/backend/') ? '../' : '';
+
+  function siteUrl(path) {
+    return `${PAGE_BASE}${String(path).replace(/^\/+/, '')}`;
+  }
 
   function byId(id) {
     return document.getElementById(id);
@@ -44,7 +49,7 @@ const SiteApp = (() => {
     row.id = `comment-${comment.id}`;
 
     const avatarHtml = comment.avatar_path
-      ? `<img src="${escapeHtml(comment.avatar_path)}" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">`
+      ? `<img src="${escapeHtml(siteUrl(comment.avatar_path))}" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">`
       : `<div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>`;
 
     const deleteHtml = comment.can_delete
@@ -74,7 +79,7 @@ const SiteApp = (() => {
     if (!likeBox || !likeCounter) return;
 
     try {
-      const data = await requestJson(`Likesbackend.php?post_id=${encodeURIComponent(postId)}`);
+      const data = await requestJson(siteUrl(`backend/Likesbackend.php?post_id=${encodeURIComponent(postId)}`));
       likeBox.innerHTML = data.status === true ? SVG_HEART_FILLED : SVG_HEART_EMPTY;
       likeCounter.innerText = String(data.likes ?? '');
     } catch (error) {
@@ -84,7 +89,7 @@ const SiteApp = (() => {
 
   async function like(postId) {
     try {
-      await fetch(`Like.php?post_id=${encodeURIComponent(postId)}`);
+      await fetch(siteUrl(`backend/Like.php?post_id=${encodeURIComponent(postId)}`));
       await refreshLikes(postId);
     } catch (error) {
       console.error('Like failed', error);
@@ -140,7 +145,7 @@ const SiteApp = (() => {
     if (!form || !list) return false;
 
     try {
-      const data = await requestJson('add-comment.php', {
+      const data = await requestJson(siteUrl('backend/add-comment.php'), {
         method: 'POST',
         body: new FormData(form)
       });
@@ -171,7 +176,7 @@ const SiteApp = (() => {
       const payload = new FormData();
       payload.append('comment_id', String(commentId));
 
-      const data = await requestJson('delete-comment.php', {
+      const data = await requestJson(siteUrl('backend/delete-comment.php'), {
         method: 'POST',
         body: payload
       });
@@ -197,7 +202,7 @@ const SiteApp = (() => {
     const offset = button.dataset.offset || 0;
 
     try {
-      const data = await requestJson(`comments.php?post_id=${encodeURIComponent(postId)}&offset=${encodeURIComponent(offset)}&limit=${COMMENT_LIMIT}`);
+      const data = await requestJson(siteUrl(`backend/comments.php?post_id=${encodeURIComponent(postId)}&offset=${encodeURIComponent(offset)}&limit=${COMMENT_LIMIT}`));
 
       if (!data.ok) {
         alert(data.error || 'Could not load comments');

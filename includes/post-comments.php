@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (!isset($postId)) { echo '<div class="alert alert-danger">postId is missing.</div>'; return; }
 require_once __DIR__ . '/../database/user_queries.php';
 
@@ -33,7 +33,7 @@ $hasMore = $totalComments > $initialLimit;
         <div class="d-flex gap-3 border rounded-3 p-2 mb-2 bg-light-subtle comment-item" id="comment-<?php echo (int) $c['id']; ?>">
           <div class="text-center" style="min-width:72px;">
             <?php if (!empty($c['avatar_path'])): ?>
-              <img src="<?php echo htmlspecialchars((string) $c['avatar_path']); ?>" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">
+              <img src="<?php echo htmlspecialchars(site_asset_url((string) $c['avatar_path'])); ?>" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">
             <?php else: ?>
               <div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>
             <?php endif; ?>

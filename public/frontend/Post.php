@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 $pageTitle = "Make a post";
 $bodyStyle = 'background-color: darkmagenta';
-require_once __DIR__ . '/../includes/header.php';
-include('../database/db.php');
+require_once __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../database/db.php';
 
 // Redirect logged-out users away immediately
 if (!isset($_SESSION['user_id'])) {
@@ -39,7 +39,7 @@ if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] !== UPLOAD_ERR_
         die("Image must be under 5MB.");
     }
 
-    $uploadDir = __DIR__ . '/uploads/';
+    $uploadDir = __DIR__ . '/../uploads/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
@@ -71,7 +71,7 @@ if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] !== UPLOAD_ERR_
 <div class="post-window" style="background-color: darkviolet;">
     <form class="post-form" method="POST" action="Post.php" enctype="multipart/form-data">
         <input type="text" name="title" placeholder="Title" required>
-        <textarea name="content" placeholder="Write something..." required></textarea>
+        <textarea name="content" placeholder="Write something..." required maxlength="5000"></textarea>
         <label class="image-upload">
             <span>Add image (optional)</span>
             <input type="file" name="postimage" accept="image/*">
@@ -87,4 +87,5 @@ if (isset($_FILES['postimage']) && $_FILES['postimage']['error'] !== UPLOAD_ERR_
     </form>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

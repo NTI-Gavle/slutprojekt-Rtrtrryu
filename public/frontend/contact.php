@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "Contact";
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 
 // Initialize variables
 $name = $email = $message = '';
@@ -63,4 +63,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 <?php
-require_once __DIR__ . '/../includes/footer.php';
+require_once __DIR__ . '/../../includes/footer.php';
+

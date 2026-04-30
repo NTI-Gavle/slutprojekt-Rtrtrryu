@@ -15,29 +15,57 @@ if (isset($_SESSION['user_id'])) {
         $headerAvatarPath = (string) $_SESSION['avatar_path'];
     }
 }
+
+$assetBasePath = '';
+if (isset($assetBasePath) && is_string($assetBasePath) && trim($assetBasePath) !== '') {
+    $assetBasePath = rtrim($assetBasePath, '/') . '/';
+} else {
+    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+    if (str_ends_with($scriptDir, '/frontend') || str_ends_with($scriptDir, '/backend')) {
+        $assetBasePath = '../';
+    }
+}
+
+if (!function_exists('site_asset_url')) {
+    function site_asset_url(string $path): string
+    {
+        $path = trim($path);
+        if ($path === '') {
+            return '';
+        }
+
+        if (preg_match('#^(?:[a-z][a-z0-9+.-]*:)?//#i', $path) || str_starts_with($path, 'data:')) {
+            return $path;
+        }
+
+        $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+        $basePath = (str_ends_with($scriptDir, '/frontend') || str_ends_with($scriptDir, '/backend')) ? '../' : '';
+
+        return $basePath . ltrim($path, '/');
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- TEST -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : 'My Home Project' ?></title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/base/style.css">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($assetBasePath . 'css/base/style.css'); ?>">
     <?php if (isset($extraStyles) && is_array($extraStyles)): ?>
         <?php foreach ($extraStyles as $extraStyle): ?>
-            <link rel="stylesheet" href="<?php echo htmlspecialchars((string) $extraStyle); ?>">
+            <link rel="stylesheet" href="<?php echo htmlspecialchars($assetBasePath . ltrim((string) $extraStyle, '/')); ?>">
         <?php endforeach; ?>
     <?php endif; ?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <!-- JS -->
-    <script src="js/app.js" defer></script>
+    <script src="<?php echo htmlspecialchars($assetBasePath . 'js/app.js'); ?>" defer></script>
 </head>
 
-<body <?php echo isset($bodyClass) ? ' class="' . htmlspecialchars((string) $bodyClass) . '"' : ''; ?>
-    <?php echo isset($bodyStyle) ? ' style="' . htmlspecialchars((string) $bodyStyle) . '"' : ''; ?>>
+<body<?php echo isset($bodyClass) ? ' class="' . htmlspecialchars((string) $bodyClass) . '"' : ''; ?><?php echo isset($bodyStyle) ? ' style="' . htmlspecialchars((string) $bodyStyle) . '"' : ''; ?>>
 
 
 <header id="header" class="site-header">
@@ -46,7 +74,7 @@ if (isset($_SESSION['user_id'])) {
             <?php if (isset($_SESSION["user_id"])): ?>
                 <a href="Profile.php" class="header-user-link text-decoration-none text-white">
                     <?php if (!empty($headerAvatarPath)): ?>
-                        <img src="<?php echo htmlspecialchars($headerAvatarPath); ?>" alt="Profile picture" class="profilepic rounded-circle">
+                        <img src="<?php echo htmlspecialchars(site_asset_url($headerAvatarPath)); ?>" alt="Profile picture" class="profilepic rounded-circle">
                     <?php else: ?>
                         <div class="profilepic rounded-circle text-white">Pfp</div>
                     <?php endif; ?>
@@ -62,5 +90,3 @@ if (isset($_SESSION['user_id'])) {
         <?php require __DIR__ . '/nav.php'; ?>
     </div>
 </header>
-
-

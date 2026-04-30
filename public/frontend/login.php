@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -22,11 +22,11 @@ if (isset($_SESSION['RegisterSuccess'])) {
 ?>
 
 <?php
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 
 <div class="Login auth-page text-light">
-    <form action="loginbackend.php" method="post" class="submit">
+    <form action="../backend/loginbackend.php" method="post" class="submit">
         <h1>Logga in</h1>
         username:
         <input type="text" name="username" maxlength="25" class="input <?php if ($errormsg != '') echo 'Error'; ?> <?php if ($succsesmsg != '') echo 'Succses'; ?>" id="name"><br>
@@ -49,4 +49,5 @@ require_once __DIR__ . '/../includes/header.php';
     ?>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

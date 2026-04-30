@@ -1,9 +1,9 @@
 <?php
 $pageTitle = "Home";
 $bodyStyle = 'background-color: darkmagenta';
-require_once __DIR__ . '/../includes/header.php';
-include('../database/db.php');
-require_once __DIR__ . '/../database/user_queries.php';
+require_once __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../database/db.php';
+require_once __DIR__ . '/../../database/user_queries.php';
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -62,7 +62,7 @@ if ($postsTable !== null && $userMeta !== null) {
 
 
 <div class="container py-4" style="background-color: darkviolet;">
-    <div><?php include('../includes/menu.php'); ?></div>
+    <div><?php include __DIR__ . '/../../includes/menu.php'; ?></div>
 
     <div class="post-window">
 
@@ -100,7 +100,7 @@ if ($postsTable !== null && $userMeta !== null) {
                 <div class="post-header <?php echo $restricted ? 'post-blurred' : ''; ?>">
                     <div class="post-author-row mb-1">
                         <?php if (!empty($post['avatar_path'])): ?>
-                            <img src="<?php echo htmlspecialchars((string) $post['avatar_path']); ?>" alt="Profile picture" class="post-author-avatar">
+                            <img src="<?php echo htmlspecialchars(site_asset_url((string) $post['avatar_path'])); ?>" alt="Profile picture" class="post-author-avatar">
                         <?php else: ?>
                             <div class="post-author-avatar post-author-avatar-fallback">Pfp</div>
                         <?php endif; ?>
@@ -122,7 +122,7 @@ if ($postsTable !== null && $userMeta !== null) {
 
                 <?php if (!empty($post['image_path'])): ?>
                     <div class="post-image <?php echo $restricted ? 'post-blurred' : ''; ?>">
-                        <img src="<?php echo htmlspecialchars((string) $post['image_path']); ?>" alt="Post image">
+                        <img src="<?php echo htmlspecialchars(site_asset_url((string) $post['image_path'])); ?>" alt="Post image">
                     </div>
                 <?php endif; ?>
 
@@ -142,4 +142,5 @@ if ($postsTable !== null && $userMeta !== null) {
 
     </div>
 </div>
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+
