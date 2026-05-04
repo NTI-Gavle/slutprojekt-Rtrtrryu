@@ -20,7 +20,7 @@ if ($userMeta === null) {
 }
 
 $columns = getTableColumns($dbconn, $userMeta['table']);
-$passwordColumn = findColumn($columns, ['losenord', 'lsenord', 'password', 'pass']);
+$passwordColumn = findColumn($columns, ['lösenord', 'password', 'pass']);
 if ($passwordColumn === null) {
     $_SESSION["loginerror"] = "User table is missing the password column.";
     header("Location: ../frontend/login.php");
@@ -52,5 +52,4 @@ if (password_verify($pass, $storedPassword)) {
 $_SESSION["loginerror"] = "wrong username or password";
 header("Location: ../frontend/login.php");
 exit;
-
 

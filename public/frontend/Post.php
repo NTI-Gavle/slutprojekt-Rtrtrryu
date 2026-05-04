@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $pageTitle = "Make a post";
 $bodyStyle = 'background-color: darkmagenta';
 require_once __DIR__ . '/../../includes/header.php';
