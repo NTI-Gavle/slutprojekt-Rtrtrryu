@@ -33,7 +33,9 @@ $hasMore = $totalComments > $initialLimit;
         <div class="d-flex gap-3 border rounded-3 p-2 mb-2 bg-light-subtle comment-item" id="comment-<?php echo (int) $c['id']; ?>">
           <div class="text-center" style="min-width:72px;">
             <?php if (!empty($c['avatar_path'])): ?>
-              <img src="<?php echo htmlspecialchars(site_asset_url((string) $c['avatar_path'])); ?>" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">
+              <span class="comment-avatar-frame rounded-circle border">
+                <img src="<?php echo htmlspecialchars(site_asset_url((string) $c['avatar_path'])); ?>" alt="pfp" class="comment-avatar-image" style="<?php echo htmlspecialchars(buildAvatarDisplayStyle($c['avatar_fit'] ?? 'contain', $c['avatar_pos_x'] ?? 50, $c['avatar_pos_y'] ?? 50, $c['avatar_scale'] ?? 100)); ?>">
+              </span>
             <?php else: ?>
               <div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>
             <?php endif; ?>

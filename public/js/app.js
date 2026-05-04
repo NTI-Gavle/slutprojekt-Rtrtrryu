@@ -141,8 +141,17 @@ const SiteApp = (() => {
     row.className = 'd-flex gap-3 border rounded-3 p-2 mb-2 bg-light-subtle comment-item';
     row.id = `comment-${comment.id}`;
 
+    const avatarStyle = (() => {
+      const fit = String(comment.avatar_fit || 'contain');
+      const objectFit = fit === 'stretch' ? 'fill' : fit;
+      const posX = Number.isFinite(Number(comment.avatar_pos_x)) ? Number(comment.avatar_pos_x) : 50;
+      const posY = Number.isFinite(Number(comment.avatar_pos_y)) ? Number(comment.avatar_pos_y) : 50;
+      const scale = Number.isFinite(Number(comment.avatar_scale)) ? Math.max(100, Math.min(200, Number(comment.avatar_scale))) : 100;
+      return `object-fit:${objectFit}; object-position:${posX}% ${posY}%; transform: translate(${posX - 50}%, ${posY - 50}%) scale(${(scale / 100).toFixed(2)}); transform-origin:center center;`;
+    })();
+
     const avatarHtml = comment.avatar_path
-      ? `<img src="${escapeHtml(siteUrl(comment.avatar_path))}" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">`
+      ? `<span class="comment-avatar-frame rounded-circle border"><img src="${escapeHtml(siteUrl(comment.avatar_path))}" alt="pfp" class="comment-avatar-image" style="${avatarStyle}"></span>`
       : `<div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>`;
 
     const commentName = String(comment.username || comment.author_name || comment.user_name || comment.name || '').trim();

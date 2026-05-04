@@ -24,14 +24,23 @@ if ($postsTable !== null && $userMeta !== null) {
     $postColumns = getTableColumns($dbconn, $postsTable);
     $postIdColumn = findColumn($postColumns, ['id', 'post_id']);
     $postCreatorColumn = findColumn($postColumns, ['creator_id', 'user_id', 'author_id']);
+    $userColumns = getTableColumns($dbconn, $userMeta['table']);
 
     if ($postIdColumn !== null && $postCreatorColumn !== null) {
         $avatarSelect = $userMeta['avatar_column'] !== null
             ? "u.`{$userMeta['avatar_column']}` AS avatar_path"
             : "NULL AS avatar_path";
+        $avatarFitColumn = findColumn($userColumns, ['avatar_fit']);
+        $avatarPosXColumn = findColumn($userColumns, ['avatar_pos_x']);
+        $avatarPosYColumn = findColumn($userColumns, ['avatar_pos_y']);
+        $avatarScaleColumn = findColumn($userColumns, ['avatar_scale']);
+        $avatarFitSelect = $avatarFitColumn !== null ? "u.`{$avatarFitColumn}` AS avatar_fit" : "NULL AS avatar_fit";
+        $avatarPosXSelect = $avatarPosXColumn !== null ? "u.`{$avatarPosXColumn}` AS avatar_pos_x" : "NULL AS avatar_pos_x";
+        $avatarPosYSelect = $avatarPosYColumn !== null ? "u.`{$avatarPosYColumn}` AS avatar_pos_y" : "NULL AS avatar_pos_y";
+        $avatarScaleSelect = $avatarScaleColumn !== null ? "u.`{$avatarScaleColumn}` AS avatar_scale" : "NULL AS avatar_scale";
 
         $sql = "
-            SELECT p.*, u.`{$userMeta['name_column']}` AS username, {$avatarSelect}
+            SELECT p.*, u.`{$userMeta['name_column']}` AS username, {$avatarSelect}, {$avatarFitSelect}, {$avatarPosXSelect}, {$avatarPosYSelect}, {$avatarScaleSelect}
             FROM `{$postsTable}` p
             JOIN `{$userMeta['table']}` u ON p.`{$postCreatorColumn}` = u.`{$userMeta['id_column']}`
             WHERE p.`{$postIdColumn}` = ?
@@ -66,7 +75,9 @@ $canEditPost = isset($_SESSION['user_id']) && canUserEditPost($dbconn, (int) $_S
                     <div class="<?php echo $restricted ? 'blurred' : ''; ?>">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <?php if (!empty($post['avatar_path'])): ?>
-                            <img src="<?php echo htmlspecialchars(site_asset_url((string) $post['avatar_path'])); ?>" alt="Profile picture" class="post-author-avatar">
+                            <span class="post-author-avatar post-author-avatar-frame">
+                                <img src="<?php echo htmlspecialchars(site_asset_url((string) $post['avatar_path'])); ?>" alt="Profile picture" class="post-author-avatar-image" style="<?php echo htmlspecialchars(buildAvatarDisplayStyle($post['avatar_fit'] ?? 'contain', $post['avatar_pos_x'] ?? 50, $post['avatar_pos_y'] ?? 50, $post['avatar_scale'] ?? 100)); ?>">
+                            </span>
                         <?php else: ?>
                             <div class="post-author-avatar post-author-avatar-fallback">Pfp</div>
                         <?php endif; ?>

@@ -444,10 +444,25 @@ html, body {
 .post-author-avatar {
     width: 28px;
     height: 28px;
+    flex: 0 0 28px;
+    display: block;
+    position: relative;
+}
+
+.post-author-avatar-frame {
     border-radius: 50%;
-    object-fit: cover;
+    overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.45);
     background: #ffffff;
+    position: relative;
+}
+
+.post-author-avatar-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .post-author-avatar-fallback {
@@ -456,6 +471,11 @@ html, body {
     font-size: 0.62rem;
     color: #fff;
     background: #1f2937;
+}
+
+.comment-avatar-image {
+    clip-path: circle(50%);
+    overflow: hidden;
 }
 
 .post-content {
@@ -604,14 +624,43 @@ html, body {
 } 
 .profilepic{
     width: 50px;
-    border-radius: 1px;
-    border: solid;
-    align-items: center;
     height: 50px;
-    justify-content: center;
-    display: flex;
-    object-fit: cover;
+    flex: 0 0 50px;
+    border-radius: 50%;
+    display: block;
+    position: relative;
+}
+
+.profilepic-frame {
     overflow: hidden;
+    border: solid;
+    border-radius: 50%;
+}
+
+.profilepic-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.comment-avatar-frame {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+}
+
+.comment-avatar-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 /*profile page*/

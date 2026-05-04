@@ -157,6 +157,36 @@ function getUserProfileData(PDO $dbconn, int $userId): ?array
     ];
 }
 
+function normalizeAvatarScaleValue($value, int $fallback = 100): int
+{
+    if (!is_numeric($value)) {
+        return $fallback;
+    }
+
+    return max(100, min(200, (int) $value));
+}
+
+function buildAvatarDisplayStyle(?string $fit, $posX, $posY, $scale, bool $includeScale = true): string
+{
+    $fit = trim((string) $fit);
+    $fit = $fit === 'stretch' ? 'fill' : $fit;
+    if (!in_array($fit, ['contain', 'fill'], true)) {
+        $fit = 'contain';
+    }
+
+    $posX = is_numeric($posX) ? max(0, min(100, (int) $posX)) : 50;
+    $posY = is_numeric($posY) ? max(0, min(100, (int) $posY)) : 50;
+    $scale = normalizeAvatarScaleValue($scale);
+
+    return sprintf(
+        'object-fit: %s; object-position: %d%% %d%%;%s transform-origin: center center;',
+        $fit,
+        $posX,
+        $posY,
+        $includeScale ? sprintf(' transform: translate(%d%%, %d%%) scale(%s);', $posX - 50, $posY - 50, number_format($scale / 100, 2, '.', '')) : ''
+    );
+}
+
 function getUserLikedPosts(PDO $dbconn, int $userId, int $limit = 6): array
 {
     $limit = max(1, min(30, $limit));
@@ -690,12 +720,21 @@ function fetchCommentsForPost(PDO $dbconn, int $postId, int $limit, int $offset 
         return [];
     }
 
+    $columns = getTableColumns($dbconn, $meta['table']);
     $avatarSelect = $meta['avatar_column'] !== null
         ? "u.`{$meta['avatar_column']}` AS avatar_path"
         : "NULL AS avatar_path";
+    $avatarFitColumn = findColumn($columns, ['avatar_fit']);
+    $avatarPosXColumn = findColumn($columns, ['avatar_pos_x']);
+    $avatarPosYColumn = findColumn($columns, ['avatar_pos_y']);
+    $avatarScaleColumn = findColumn($columns, ['avatar_scale']);
+    $avatarFitSql = $avatarFitColumn !== null ? "u.`{$avatarFitColumn}` AS avatar_fit" : "NULL AS avatar_fit";
+    $avatarPosXSql = $avatarPosXColumn !== null ? "u.`{$avatarPosXColumn}` AS avatar_pos_x" : "NULL AS avatar_pos_x";
+    $avatarPosYSql = $avatarPosYColumn !== null ? "u.`{$avatarPosYColumn}` AS avatar_pos_y" : "NULL AS avatar_pos_y";
+    $avatarScaleSql = $avatarScaleColumn !== null ? "u.`{$avatarScaleColumn}` AS avatar_scale" : "NULL AS avatar_scale";
 
     $sql = "
-        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, u.`{$meta['name_column']}` AS author_name, {$avatarSelect}
+        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, u.`{$meta['name_column']}` AS author_name, {$avatarSelect}, {$avatarFitSql}, {$avatarPosXSql}, {$avatarPosYSql}, {$avatarScaleSql}
         FROM comments c
         JOIN `{$meta['table']}` u ON u.`{$meta['id_column']}` = c.author_id
         WHERE c.post_id = ?
@@ -721,9 +760,18 @@ function fetchCommentById(PDO $dbconn, int $commentId): ?array
     $avatarSelect = $meta['avatar_column'] !== null
         ? "u.`{$meta['avatar_column']}` AS avatar_path"
         : "NULL AS avatar_path";
+    $columns = getTableColumns($dbconn, $meta['table']);
+    $avatarFitColumn = findColumn($columns, ['avatar_fit']);
+    $avatarPosXColumn = findColumn($columns, ['avatar_pos_x']);
+    $avatarPosYColumn = findColumn($columns, ['avatar_pos_y']);
+    $avatarScaleColumn = findColumn($columns, ['avatar_scale']);
+    $avatarFitSql = $avatarFitColumn !== null ? "u.`{$avatarFitColumn}` AS avatar_fit" : "NULL AS avatar_fit";
+    $avatarPosXSql = $avatarPosXColumn !== null ? "u.`{$avatarPosXColumn}` AS avatar_pos_x" : "NULL AS avatar_pos_x";
+    $avatarPosYSql = $avatarPosYColumn !== null ? "u.`{$avatarPosYColumn}` AS avatar_pos_y" : "NULL AS avatar_pos_y";
+    $avatarScaleSql = $avatarScaleColumn !== null ? "u.`{$avatarScaleColumn}` AS avatar_scale" : "NULL AS avatar_scale";
 
     $sql = "
-        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, u.`{$meta['name_column']}` AS author_name, {$avatarSelect}
+        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, u.`{$meta['name_column']}` AS author_name, {$avatarSelect}, {$avatarFitSql}, {$avatarPosXSql}, {$avatarPosYSql}, {$avatarScaleSql}
         FROM comments c
         JOIN `{$meta['table']}` u ON u.`{$meta['id_column']}` = c.author_id
         WHERE c.id = ?

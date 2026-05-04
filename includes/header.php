@@ -3,6 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $headerAvatarPath = null;
+$headerAvatarStyle = '';
 if (isset($_SESSION['user_id'])) {
     require_once __DIR__ . '/../database/db.php';
     require_once __DIR__ . '/../database/user_queries.php';
@@ -11,6 +12,12 @@ if (isset($_SESSION['user_id'])) {
     if ($headerProfile !== null && !empty($headerProfile['avatar_path'])) {
         $headerAvatarPath = (string) $headerProfile['avatar_path'];
         $_SESSION['avatar_path'] = $headerAvatarPath;
+        $headerAvatarStyle = buildAvatarDisplayStyle(
+            $headerProfile['avatar_fit'] ?? 'contain',
+            $headerProfile['avatar_pos_x'] ?? 50,
+            $headerProfile['avatar_pos_y'] ?? 50,
+            $headerProfile['avatar_scale'] ?? 100
+        );
     } elseif (isset($_SESSION['avatar_path']) && trim((string) $_SESSION['avatar_path']) !== '') {
         $headerAvatarPath = (string) $_SESSION['avatar_path'];
     }
@@ -74,7 +81,9 @@ if (!function_exists('site_asset_url')) {
             <?php if (isset($_SESSION["user_id"])): ?>
                 <a href="Profile.php" class="header-user-link text-decoration-none text-white">
                     <?php if (!empty($headerAvatarPath)): ?>
-                        <img src="<?php echo htmlspecialchars(site_asset_url($headerAvatarPath)); ?>" alt="Profile picture" class="profilepic rounded-circle">
+                        <span class="profilepic profilepic-frame">
+                            <img src="<?php echo htmlspecialchars(site_asset_url($headerAvatarPath)); ?>" alt="Profile picture" class="profilepic-image" style="<?php echo htmlspecialchars($headerAvatarStyle); ?>">
+                        </span>
                     <?php else: ?>
                         <div class="profilepic rounded-circle text-white">Pfp</div>
                     <?php endif; ?>
