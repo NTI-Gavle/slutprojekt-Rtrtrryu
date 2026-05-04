@@ -145,8 +145,13 @@ const SiteApp = (() => {
       ? `<img src="${escapeHtml(siteUrl(comment.avatar_path))}" alt="pfp" class="rounded-circle border" style="width:48px;height:48px;object-fit:cover;">`
       : `<div class="rounded-circle border bg-dark text-white d-grid place-items-center" style="width:48px;height:48px;display:grid;">Pfp</div>`;
 
+    const commentName = String(comment.username || comment.author_name || comment.user_name || comment.name || '').trim();
+    const replyHtml = commentName
+      ? `<button type="button" class="btn btn-sm btn-outline-primary" data-action="reply-comment" data-comment-user="${escapeHtml(commentName)}">Reply</button>`
+      : '';
+
     const deleteHtml = comment.can_delete
-      ? `<div class="ms-auto align-self-start comment-actions"><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteComment(${Number(comment.id)})">Delete</button></div>`
+      ? `<button type="button" class="btn btn-sm btn-outline-danger" data-action="delete-comment" data-comment-id="${Number(comment.id)}">Delete</button>`
       : '';
 
     row.innerHTML = `
@@ -160,10 +165,35 @@ const SiteApp = (() => {
         <p class="mb-1 comment-body">${escapeHtml(comment.body).replace(/\n/g, '<br>')}</p>
         <small class="text-muted">${escapeHtml(comment.created_at)}</small>
       </div>
-      ${deleteHtml}
+      <div class="ms-auto align-self-start comment-actions">
+        ${replyHtml}
+        ${deleteHtml}
+      </div>
     `;
 
     return row;
+  }
+
+  function insertReplyMention(username) {
+    const form = byId('commentForm');
+    if (!form) return;
+
+    const input = form.querySelector('input[name="body"]');
+    if (!input) return;
+
+    const mention = `@${String(username).replace(/^@+/, '').trim()} `;
+    const currentValue = input.value || '';
+    const start = typeof input.selectionStart === 'number' ? input.selectionStart : currentValue.length;
+    const end = typeof input.selectionEnd === 'number' ? input.selectionEnd : currentValue.length;
+    const nextValue = `${currentValue.slice(0, start)}${mention}${currentValue.slice(end)}`;
+
+    input.value = nextValue;
+    input.focus();
+
+    const caret = start + mention.length;
+    if (typeof input.setSelectionRange === 'function') {
+      input.setSelectionRange(caret, caret);
+    }
   }
 
   async function refreshLikes(postId) {
@@ -347,6 +377,12 @@ const SiteApp = (() => {
       if (action === 'delete-comment') {
         event.preventDefault();
         deleteComment(actionTarget.dataset.commentId);
+        return;
+      }
+
+      if (action === 'reply-comment') {
+        event.preventDefault();
+        insertReplyMention(actionTarget.dataset.commentUser || '');
       }
     });
 
@@ -402,6 +438,7 @@ const SiteApp = (() => {
     postComment,
     deleteComment,
     loadMoreComments,
+    insertReplyMention,
     initPageFeatures,
   };
 })();
@@ -417,3 +454,4 @@ window.openNav = SiteApp.openNav;
 window.closeNav = SiteApp.closeNav;
 window.postComment = SiteApp.postComment;
 window.deleteComment = SiteApp.deleteComment;
+window.insertReplyMention = SiteApp.insertReplyMention;

@@ -167,10 +167,10 @@ if ($formImagePath !== null) {
             <img src="<?php echo htmlspecialchars($previewImageSrc); ?>" alt="Post image preview" class="img-fluid rounded post-edit-preview">
         </div>
 
-        <label class="image-upload btn btn-outline-dark d-inline-flex align-items-center gap-2">
-            <span><?php echo $isEditMode ? 'Replace image (optional)' : 'Add image (optional)'; ?></span>
-            <input type="file" name="postimage" accept="image/*" class="visually-hidden" data-preview-target=".post-edit-preview">
+        <label for="postimage" class="form-label image-upload-label mb-1">
+            <?php echo $isEditMode ? 'Replace image (optional)' : 'Add image (optional)'; ?>
         </label>
+        <input type="file" id="postimage" name="postimage" accept="image/*" class="form-control form-control-sm post-image-input" data-preview-target=".post-edit-preview">
 
         <label class="adult-toggle">
             <span>18+ content</span>

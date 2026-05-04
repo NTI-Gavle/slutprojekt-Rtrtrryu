@@ -695,7 +695,7 @@ function fetchCommentsForPost(PDO $dbconn, int $postId, int $limit, int $offset 
         : "NULL AS avatar_path";
 
     $sql = "
-        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, {$avatarSelect}
+        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, u.`{$meta['name_column']}` AS author_name, {$avatarSelect}
         FROM comments c
         JOIN `{$meta['table']}` u ON u.`{$meta['id_column']}` = c.author_id
         WHERE c.post_id = ?
@@ -723,7 +723,7 @@ function fetchCommentById(PDO $dbconn, int $commentId): ?array
         : "NULL AS avatar_path";
 
     $sql = "
-        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, {$avatarSelect}
+        SELECT c.id, c.post_id, c.author_id, c.body, c.created_at, u.`{$meta['name_column']}` AS username, u.`{$meta['name_column']}` AS author_name, {$avatarSelect}
         FROM comments c
         JOIN `{$meta['table']}` u ON u.`{$meta['id_column']}` = c.author_id
         WHERE c.id = ?

@@ -512,6 +512,10 @@ html, body {
 
 .comment-actions {
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
 }
 .image-upload {
     display: flex;
@@ -521,8 +525,16 @@ html, body {
     color: #555;
 }
 
-.image-upload input[type="file"] {
-    font-size: 13px;
+.image-upload-label {
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+}
+
+.post-image-input {
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px;
 }
 
 .post-image {

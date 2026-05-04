@@ -47,11 +47,21 @@ $hasMore = $totalComments > $initialLimit;
             <p class="mb-1 comment-body"><?php echo nl2br(htmlspecialchars($c['body'])); ?></p>
             <small class="text-muted"><?php echo htmlspecialchars($c['created_at']); ?></small>
           </div>
-          <?php if ($canDeleteComment): ?>
-            <div class="ms-auto align-self-start comment-actions">
+          <div class="ms-auto align-self-start comment-actions">
+            <?php if (!empty($c['username'])): ?>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                data-action="reply-comment"
+                data-comment-user="<?php echo htmlspecialchars($c['username']); ?>"
+              >
+                Reply
+              </button>
+            <?php endif; ?>
+            <?php if ($canDeleteComment): ?>
               <button type="button" class="btn btn-sm btn-outline-danger" data-action="delete-comment" data-comment-id="<?php echo (int) $c['id']; ?>">Delete</button>
-            </div>
-          <?php endif; ?>
+            <?php endif; ?>
+          </div>
         </div>
       <?php endforeach; ?>
     </div>
