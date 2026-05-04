@@ -49,6 +49,7 @@ if (!$post) {
 }
 
 $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$userIsAdult);
+$canEditPost = isset($_SESSION['user_id']) && canUserEditPost($dbconn, (int) $_SESSION['user_id'], (int) $postId);
 ?>
 
 <div class="container py-4" style="background-color: darkviolet;" data-post-id="<?php echo (int) $postId; ?>">
@@ -56,6 +57,12 @@ $restricted = !empty($post['adultcheck']) && (!isset($_SESSION['user_id']) || !$
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm position-relative">
                 <div class="card-body">
+                    <?php if ($canEditPost): ?>
+                        <div class="d-flex justify-content-end mb-2">
+                            <a href="Post.php?edit_post_id=<?php echo (int) $postId; ?>" class="btn btn-sm btn-outline-light">Edit post</a>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="<?php echo $restricted ? 'blurred' : ''; ?>">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <?php if (!empty($post['avatar_path'])): ?>

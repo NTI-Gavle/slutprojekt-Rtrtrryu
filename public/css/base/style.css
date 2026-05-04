@@ -203,6 +203,49 @@ html, body {
 .site-footer a:hover {
     text-decoration: underline;
 }
+
+.post-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 4;
+    width: max-content;
+    max-width: calc(100% - 24px);
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+
+.post-actions form {
+    margin: 0;
+    display: inline-flex;
+    position: relative;
+    z-index: 6;
+}
+
+.post-actions > * {
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 6;
+}
+
+.post-open-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.post-edit-preview {
+    width: 100%;
+    max-width: 100%;
+    min-height: 220px;
+    object-fit: cover;
+    border: 1px solid #dbe0e6;
+    background: #eef2f7;
+}
 /*Menu*/
 .sidenav {
     height: 100%;
@@ -363,10 +406,11 @@ html, body {
 }
 
 .admin-delete-form {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 5;
+    position: static;
+    right: auto;
+    top: auto;
+    z-index: auto;
+    display: inline-flex;
 }
 
 .admin-delete-btn {

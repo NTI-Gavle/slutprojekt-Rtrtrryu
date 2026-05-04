@@ -131,6 +131,14 @@ function getUserProfileData(PDO $dbconn, int $userId): ?array
     $description = firstNonEmptyValue($row, ['profile_description', 'description', 'bio', 'beskrivning']) ?? '';
     $avatarPath = firstNonEmptyValue($row, ['avatar_path', 'pfp_path', 'profile_picture', 'profile_image', 'image_path', 'Pfp']);
     $backgroundPath = firstNonEmptyValue($row, ['background_path', 'banner_path', 'cover_path', 'header_image_path']);
+    $avatarFit = firstNonEmptyValue($row, ['avatar_fit']);
+    $avatarPosX = firstNonEmptyValue($row, ['avatar_pos_x']);
+    $avatarPosY = firstNonEmptyValue($row, ['avatar_pos_y']);
+    $avatarScale = firstNonEmptyValue($row, ['avatar_scale']);
+    $backgroundFit = firstNonEmptyValue($row, ['background_fit']);
+    $backgroundPosX = firstNonEmptyValue($row, ['background_pos_x']);
+    $backgroundPosY = firstNonEmptyValue($row, ['background_pos_y']);
+    $backgroundScale = firstNonEmptyValue($row, ['background_scale']);
 
     return [
         'user_id' => (int) ($row[$idColumn] ?? $userId),
@@ -138,6 +146,14 @@ function getUserProfileData(PDO $dbconn, int $userId): ?array
         'description' => $description,
         'avatar_path' => $avatarPath,
         'background_path' => $backgroundPath,
+        'avatar_fit' => $avatarFit !== null && trim($avatarFit) !== '' ? $avatarFit : 'contain',
+        'avatar_pos_x' => is_numeric($avatarPosX) ? (int) $avatarPosX : 50,
+        'avatar_pos_y' => is_numeric($avatarPosY) ? (int) $avatarPosY : 50,
+        'avatar_scale' => is_numeric($avatarScale) ? (int) $avatarScale : 100,
+        'background_fit' => $backgroundFit !== null && trim($backgroundFit) !== '' ? $backgroundFit : 'contain',
+        'background_pos_x' => is_numeric($backgroundPosX) ? (int) $backgroundPosX : 50,
+        'background_pos_y' => is_numeric($backgroundPosY) ? (int) $backgroundPosY : 50,
+        'background_scale' => is_numeric($backgroundScale) ? (int) $backgroundScale : 100,
     ];
 }
 
@@ -281,7 +297,21 @@ function ensureTextColumnUtf8mb4(PDO $dbconn, string $tableName, string $columnN
     $dbconn->exec($sql);
 }
 
-function updateUserProfileData(PDO $dbconn, int $userId, string $description, string $avatarPath, string $backgroundPath): bool
+function updateUserProfileData(
+    PDO $dbconn,
+    int $userId,
+    string $description,
+    string $avatarPath,
+    string $backgroundPath,
+    string $avatarFit = 'contain',
+    int $avatarPosX = 50,
+    int $avatarPosY = 50,
+    int $avatarScale = 100,
+    string $backgroundFit = 'contain',
+    int $backgroundPosX = 50,
+    int $backgroundPosY = 50,
+    int $backgroundScale = 100
+): bool
 {
     $userTable = resolveUserTable($dbconn);
     if ($userTable === null) {
@@ -297,6 +327,14 @@ function updateUserProfileData(PDO $dbconn, int $userId, string $description, st
     $descriptionColumn = findColumn($columns, ['profile_description', 'description', 'bio', 'beskrivning']);
     $avatarColumn = findColumn($columns, ['avatar_path', 'pfp_path', 'profile_picture', 'profile_image', 'image_path', 'Pfp']);
     $backgroundColumn = findColumn($columns, ['background_path', 'banner_path', 'cover_path', 'header_image_path']);
+    $avatarFitColumn = findColumn($columns, ['avatar_fit']);
+    $avatarPosXColumn = findColumn($columns, ['avatar_pos_x']);
+    $avatarPosYColumn = findColumn($columns, ['avatar_pos_y']);
+    $avatarScaleColumn = findColumn($columns, ['avatar_scale']);
+    $backgroundFitColumn = findColumn($columns, ['background_fit']);
+    $backgroundPosXColumn = findColumn($columns, ['background_pos_x']);
+    $backgroundPosYColumn = findColumn($columns, ['background_pos_y']);
+    $backgroundScaleColumn = findColumn($columns, ['background_scale']);
 
     if ($descriptionColumn === null) {
         tryAddColumn($dbconn, $userTable, 'profile_description', 'TEXT NULL');
@@ -313,9 +351,49 @@ function updateUserProfileData(PDO $dbconn, int $userId, string $description, st
         $backgroundColumn = 'background_path';
     }
 
+    if ($avatarFitColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'avatar_fit', 'VARCHAR(20) NULL');
+        $avatarFitColumn = 'avatar_fit';
+    }
+
+    if ($avatarPosXColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'avatar_pos_x', 'INT NULL');
+        $avatarPosXColumn = 'avatar_pos_x';
+    }
+
+    if ($avatarPosYColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'avatar_pos_y', 'INT NULL');
+        $avatarPosYColumn = 'avatar_pos_y';
+    }
+
+    if ($avatarScaleColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'avatar_scale', 'INT NULL');
+        $avatarScaleColumn = 'avatar_scale';
+    }
+
+    if ($backgroundFitColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'background_fit', 'VARCHAR(20) NULL');
+        $backgroundFitColumn = 'background_fit';
+    }
+
+    if ($backgroundPosXColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'background_pos_x', 'INT NULL');
+        $backgroundPosXColumn = 'background_pos_x';
+    }
+
+    if ($backgroundPosYColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'background_pos_y', 'INT NULL');
+        $backgroundPosYColumn = 'background_pos_y';
+    }
+
+    if ($backgroundScaleColumn === null) {
+        tryAddColumn($dbconn, $userTable, 'background_scale', 'INT NULL');
+        $backgroundScaleColumn = 'background_scale';
+    }
+
     ensureTextColumnUtf8mb4($dbconn, $userTable, $descriptionColumn);
 
-    $sql = "UPDATE `{$userTable}` SET `{$descriptionColumn}` = ?, `{$avatarColumn}` = ?, `{$backgroundColumn}` = ? WHERE `{$idColumn}` = ?";
+    $sql = "UPDATE `{$userTable}` SET `{$descriptionColumn}` = ?, `{$avatarColumn}` = ?, `{$backgroundColumn}` = ?, `{$avatarFitColumn}` = ?, `{$avatarPosXColumn}` = ?, `{$avatarPosYColumn}` = ?, `{$avatarScaleColumn}` = ?, `{$backgroundFitColumn}` = ?, `{$backgroundPosXColumn}` = ?, `{$backgroundPosYColumn}` = ?, `{$backgroundScaleColumn}` = ? WHERE `{$idColumn}` = ?";
     $stmt = $dbconn->prepare($sql);
 
     $avatarValue = trim($avatarPath);
@@ -328,7 +406,30 @@ function updateUserProfileData(PDO $dbconn, int $userId, string $description, st
         $backgroundValue = null;
     }
 
-    return $stmt->execute([$description, $avatarValue, $backgroundValue, $userId]);
+    $avatarFit = in_array($avatarFit, ['contain', 'stretch'], true) ? $avatarFit : 'contain';
+    $backgroundFit = in_array($backgroundFit, ['contain', 'stretch'], true) ? $backgroundFit : 'contain';
+
+    $avatarPosX = max(0, min(100, $avatarPosX));
+    $avatarPosY = max(0, min(100, $avatarPosY));
+    $avatarScale = max(50, min(200, $avatarScale));
+    $backgroundPosX = max(0, min(100, $backgroundPosX));
+    $backgroundPosY = max(0, min(100, $backgroundPosY));
+    $backgroundScale = max(50, min(200, $backgroundScale));
+
+    return $stmt->execute([
+        $description,
+        $avatarValue,
+        $backgroundValue,
+        $avatarFit,
+        $avatarPosX,
+        $avatarPosY,
+        $avatarScale,
+        $backgroundFit,
+        $backgroundPosX,
+        $backgroundPosY,
+        $backgroundScale,
+        $userId
+    ]);
 }
 
 function getUserRoleValue(PDO $dbconn, int $userId): int
@@ -424,6 +525,85 @@ function canUserDeletePost(PDO $dbconn, int $userId, int $postId): bool
 
     $creatorId = getPostCreatorId($dbconn, $postId);
     return $creatorId !== null && $creatorId === $userId;
+}
+
+function canUserEditPost(PDO $dbconn, int $userId, int $postId): bool
+{
+    return canUserDeletePost($dbconn, $userId, $postId);
+}
+
+function getPostById(PDO $dbconn, int $postId): ?array
+{
+    $meta = getPostTableMeta($dbconn);
+    if ($meta === null) {
+        return null;
+    }
+
+    $stmt = $dbconn->prepare("SELECT * FROM `{$meta['table']}` WHERE `{$meta['id_column']}` = ? LIMIT 1");
+    $stmt->execute([$postId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ?: null;
+}
+
+function updatePostForUser(PDO $dbconn, int $userId, int $postId, string $title, string $body, int $isAdult, ?string $imagePath = null): bool
+{
+    if (!canUserEditPost($dbconn, $userId, $postId)) {
+        return false;
+    }
+
+    $meta = getPostTableMeta($dbconn);
+    if ($meta === null) {
+        return false;
+    }
+
+    $columns = getTableColumns($dbconn, $meta['table']);
+    $titleColumn = findColumn($columns, ['title', 'rubrik']);
+    $bodyColumn = findColumn($columns, ['body', 'content', 'text']);
+    $adultColumn = findColumn($columns, ['adultcheck', 'age_check', 'is_adult']);
+    $imageColumn = findColumn($columns, ['image_path', 'image', 'bild']);
+
+    if ($titleColumn === null || $bodyColumn === null || $adultColumn === null) {
+        return false;
+    }
+
+    $existingPost = getPostById($dbconn, $postId);
+    if ($existingPost === null) {
+        return false;
+    }
+
+    $currentImagePath = $imageColumn !== null ? (string) ($existingPost[$imageColumn] ?? '') : '';
+    $newImagePath = $currentImagePath;
+    if ($imagePath !== null) {
+        $newImagePath = trim($imagePath);
+    }
+
+    $setParts = [
+        "`{$titleColumn}` = ?",
+        "`{$bodyColumn}` = ?",
+        "`{$adultColumn}` = ?",
+    ];
+    $params = [$title, $body, $isAdult];
+
+    if ($imageColumn !== null) {
+        $setParts[] = "`{$imageColumn}` = ?";
+        $params[] = $newImagePath !== '' ? $newImagePath : null;
+    }
+
+    $params[] = $postId;
+
+    $sql = "UPDATE `{$meta['table']}` SET " . implode(', ', $setParts) . " WHERE `{$meta['id_column']}` = ?";
+    $stmt = $dbconn->prepare($sql);
+    $saved = $stmt->execute($params);
+
+    if ($saved && $imageColumn !== null && $imagePath !== null && $currentImagePath !== '' && $currentImagePath !== $newImagePath && strpos($currentImagePath, 'uploads/') === 0) {
+        $absoluteImagePath = __DIR__ . '/../public/' . $currentImagePath;
+        if (is_file($absoluteImagePath)) {
+            @unlink($absoluteImagePath);
+        }
+    }
+
+    return $saved;
 }
 
 function deletePostAsAdmin(PDO $dbconn, int $postId): bool

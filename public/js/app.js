@@ -43,6 +43,99 @@ const SiteApp = (() => {
     img.src = visible ? src : '';
   }
 
+  function bindFilePreviewInputs() {
+    document.querySelectorAll('input[type="file"][data-preview-target]').forEach((input) => {
+      const targetSelector = input.dataset.previewTarget;
+      if (!targetSelector) return;
+
+      const preview = document.querySelector(targetSelector);
+      if (!preview) return;
+
+      input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        if (input.dataset.previewObjectUrl) {
+          URL.revokeObjectURL(input.dataset.previewObjectUrl);
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        input.dataset.previewObjectUrl = objectUrl;
+        preview.src = objectUrl;
+      });
+    });
+  }
+
+  function bindProfileDisplayControls() {
+    const applyPreviewTransform = (preview) => {
+      const scale = Number(preview.dataset.profileScale || 100) / 100;
+      const posX = Number(preview.dataset.profileObjectPositionX || 50);
+      const posY = Number(preview.dataset.profileObjectPositionY || 50);
+      const translateX = (posX - 50) * 1;
+      const translateY = (posY - 50) * 1;
+      preview.style.transformOrigin = 'center center';
+      preview.style.transform = `translate(${translateX}%, ${translateY}%) scale(${scale})`;
+    };
+
+    const syncFitModeControls = (fitControl, preview) => {
+      const fitMode = fitControl.value;
+      const popover = fitControl.closest('.profile-editor-popover');
+      if (!popover) return;
+
+      const isStretch = fitMode === 'stretch';
+      popover.querySelectorAll('input[type="range"], select').forEach((input) => {
+        if (input === fitControl) return;
+        input.disabled = isStretch;
+      });
+
+      if (isStretch) {
+        preview.style.objectFit = 'fill';
+        preview.dataset.profileObjectPositionX = '50';
+        preview.dataset.profileObjectPositionY = '50';
+        preview.dataset.profileScale = '100';
+        preview.style.transform = 'translate(0%, 0%) scale(1)';
+      }
+    };
+
+    document.querySelectorAll('[data-preview-target][data-preview-style]').forEach((control) => {
+      const targetSelector = control.dataset.previewTarget;
+      const previewStyle = control.dataset.previewStyle;
+      if (!targetSelector || !previewStyle) return;
+
+      const preview = document.querySelector(targetSelector);
+      if (!preview) return;
+
+      const applyValue = () => {
+        if (previewStyle === 'objectFit') {
+          preview.style.objectFit = control.value === 'stretch' ? 'fill' : control.value;
+          syncFitModeControls(control, preview);
+          return;
+        }
+
+        if (previewStyle === 'scale') {
+          preview.dataset.profileScale = String(control.value || 100);
+          applyPreviewTransform(preview);
+          return;
+        }
+
+        if (previewStyle === 'objectPositionX') {
+          preview.dataset.profileObjectPositionX = control.value;
+          applyPreviewTransform(preview);
+          return;
+        }
+
+        if (previewStyle === 'objectPositionY') {
+          preview.dataset.profileObjectPositionY = control.value;
+          applyPreviewTransform(preview);
+        }
+      };
+
+      control.addEventListener('input', applyValue);
+      control.addEventListener('change', applyValue);
+      applyValue();
+    });
+  }
+
   function renderComment(comment) {
     const row = document.createElement('div');
     row.className = 'd-flex gap-3 border rounded-3 p-2 mb-2 bg-light-subtle comment-item';
@@ -280,6 +373,22 @@ const SiteApp = (() => {
         }
       });
     }
+
+    bindFilePreviewInputs();
+    bindProfileDisplayControls();
+
+    document.addEventListener('click', (event) => {
+      const profileToggle = event.target.closest('[data-action="toggle-profile-editor"]');
+      if (!profileToggle) return;
+
+      const targetId = profileToggle.dataset.target;
+      if (!targetId) return;
+
+      const panel = document.getElementById(targetId);
+      if (!panel) return;
+
+      panel.classList.toggle('d-none');
+    });
   }
 
   return {

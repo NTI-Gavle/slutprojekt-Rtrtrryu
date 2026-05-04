@@ -87,14 +87,22 @@ if ($postsTable !== null && $userMeta !== null) {
         <?php foreach ($posts as $post): ?>
             <?php $restricted = !empty($post['adultcheck']) && ($currentUserId <= 0 || !$userIsAdult); ?>
             <?php $canDeletePost = $currentUserId > 0 && ($isAdmin || (int) ($post['creator_id'] ?? 0) === $currentUserId); ?>
+            <?php $canEditPost = $currentUserId > 0 && ($isAdmin || (int) ($post['creator_id'] ?? 0) === $currentUserId); ?>
             <div class="post feed-post shadow-sm position-relative">
                 <a href="PostViewer.php?post_id=<?php echo (int) $post['id']; ?>" class="post-open-link" aria-label="Open post"></a>
-                <?php if ($canDeletePost): ?>
-                    <form method="POST" action="index.php" class="admin-delete-form" data-confirm="Delete this post?">
-                        <input type="hidden" name="delete_post_id" value="<?php echo (int) $post['id']; ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars((string) $_SESSION['csrf_token']); ?>">
-                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                    </form>
+                <?php if ($canEditPost || $canDeletePost): ?>
+                    <div class="post-actions">
+                        <?php if ($canEditPost): ?>
+                            <a href="Post.php?edit_post_id=<?php echo (int) $post['id']; ?>" class="btn btn-sm btn-outline-light">Edit</a>
+                        <?php endif; ?>
+                        <?php if ($canDeletePost): ?>
+                            <form method="POST" action="index.php" class="admin-delete-form" data-confirm="Delete this post?">
+                                <input type="hidden" name="delete_post_id" value="<?php echo (int) $post['id']; ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars((string) $_SESSION['csrf_token']); ?>">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 <?php endif; ?>
 
                 <div class="post-header <?php echo $restricted ? 'post-blurred' : ''; ?>">

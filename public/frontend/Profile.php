@@ -54,6 +54,48 @@ function saveProfileImageUpload(string $fieldName, string $prefix, ?string &$err
     return 'uploads/profile/' . $filename;
 }
 
+function profilePlaceholderDataUri(string $label, string $background = '#e8ecf1', string $foreground = '#374151'): string
+{
+    $svg = sprintf(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect width="1200" height="400" fill="%s"/><text x="50%%" y="50%%" dominant-baseline="middle" text-anchor="middle" fill="%s" font-family="Arial, sans-serif" font-size="44">%s</text></svg>',
+        htmlspecialchars($background, ENT_QUOTES),
+        htmlspecialchars($foreground, ENT_QUOTES),
+        htmlspecialchars($label, ENT_QUOTES)
+    );
+
+    return 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($svg);
+}
+
+function normalizeFitValue(?string $value, string $fallback = 'cover'): string
+{
+    $allowed = ['contain', 'stretch'];
+    $value = trim((string) $value);
+    return in_array($value, $allowed, true) ? $value : $fallback;
+}
+
+function profileFitCssValue(string $fit): string
+{
+    return $fit === 'stretch' ? 'fill' : $fit;
+}
+
+function clampPercentValue($value, int $fallback = 50): int
+{
+    if (!is_numeric($value)) {
+        return $fallback;
+    }
+
+    return max(0, min(100, (int) $value));
+}
+
+function clampScaleValue($value, int $fallback = 100): int
+{
+    if (!is_numeric($value)) {
+        return $fallback;
+    }
+
+    return max(100, min(200, (int) $value));
+}
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -80,6 +122,14 @@ if ($isOwnProfile && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $newDescription = trim((string) ($_POST['profile_description'] ?? ''));
     $newAvatarPath = trim((string) ($profile['avatar_path'] ?? ''));
     $newBackgroundPath = trim((string) ($profile['background_path'] ?? ''));
+    $avatarFit = normalizeFitValue($_POST['avatar_fit'] ?? ($profile['avatar_fit'] ?? 'contain'));
+    $avatarPosX = clampPercentValue($_POST['avatar_pos_x'] ?? ($profile['avatar_pos_x'] ?? 50));
+    $avatarPosY = clampPercentValue($_POST['avatar_pos_y'] ?? ($profile['avatar_pos_y'] ?? 50));
+    $avatarScale = clampScaleValue($_POST['avatar_scale'] ?? ($profile['avatar_scale'] ?? 100));
+    $backgroundFit = normalizeFitValue($_POST['background_fit'] ?? ($profile['background_fit'] ?? 'contain'));
+    $backgroundPosX = clampPercentValue($_POST['background_pos_x'] ?? ($profile['background_pos_x'] ?? 50));
+    $backgroundPosY = clampPercentValue($_POST['background_pos_y'] ?? ($profile['background_pos_y'] ?? 50));
+    $backgroundScale = clampScaleValue($_POST['background_scale'] ?? ($profile['background_scale'] ?? 100));
 
     $uploadedAvatarPath = saveProfileImageUpload('avatar_file', 'avatar', $saveError);
     if ($uploadedAvatarPath !== null) {
@@ -104,7 +154,15 @@ if ($isOwnProfile && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 (int) $_SESSION['user_id'],
                 $newDescription,
                 $newAvatarPath,
-                $newBackgroundPath
+                $newBackgroundPath,
+                $avatarFit,
+                $avatarPosX,
+                $avatarPosY,
+                $avatarScale,
+                $backgroundFit,
+                $backgroundPosX,
+                $backgroundPosY,
+                $backgroundScale
             );
 
             if ($saved) {
@@ -127,24 +185,100 @@ $username = $profile['username'] ?? 'Unknown user';
 $profileDescription = trim((string) ($profile['description'] ?? ''));
 $pfpPath = $profile['avatar_path'] ?? null;
 $backgroundPath = $profile['background_path'] ?? null;
+$avatarFit = normalizeFitValue($profile['avatar_fit'] ?? 'contain');
+$avatarPosX = clampPercentValue($profile['avatar_pos_x'] ?? 50);
+$avatarPosY = clampPercentValue($profile['avatar_pos_y'] ?? 50);
+$avatarScale = clampScaleValue($profile['avatar_scale'] ?? 100);
+$backgroundFit = normalizeFitValue($profile['background_fit'] ?? 'contain');
+$backgroundPosX = clampPercentValue($profile['background_pos_x'] ?? 50);
+$backgroundPosY = clampPercentValue($profile['background_pos_y'] ?? 50);
+$backgroundScale = clampScaleValue($profile['background_scale'] ?? 100);
+$profileAvatarSrc = !empty($pfpPath) ? site_asset_url((string) $pfpPath) : profilePlaceholderDataUri('Pfp', '#111111', '#ffffff');
+$profileBackgroundSrc = !empty($backgroundPath) ? site_asset_url((string) $backgroundPath) : profilePlaceholderDataUri('Background image');
 ?>
     
 
 <div class="container py-4 profile-page" style="background-color: darkviolet;">
     <div class="profile-shell">
         <div class="profile-top-banner">
-            <?php if (!empty($backgroundPath)): ?>
-                <img src="<?php echo htmlspecialchars(site_asset_url((string) $backgroundPath)); ?>" alt="Background image" class="profile-banner-image">
-            <?php else: ?>
-                <span>Background image</span>
+            <div class="profile-banner-frame">
+                <img
+                    id="profile-background-preview"
+                    src="<?php echo htmlspecialchars($profileBackgroundSrc); ?>"
+                    alt="Background image"
+                    class="profile-banner-image"
+                    style="object-fit: <?php echo htmlspecialchars(profileFitCssValue($backgroundFit)); ?>; transform: translate(<?php echo ((int) $backgroundPosX - 50); ?>%, <?php echo ((int) $backgroundPosY - 50); ?>%) scale(<?php echo ((int) $backgroundScale) / 100; ?>); transform-origin: center center;"
+                    data-profile-object-position-x="<?php echo (int) $backgroundPosX; ?>"
+                    data-profile-object-position-y="<?php echo (int) $backgroundPosY; ?>"
+                    data-profile-scale="<?php echo (int) $backgroundScale; ?>"
+                >
+            </div>
+            <?php if ($isOwnProfile): ?>
+                <button type="button" class="btn btn-sm btn-dark profile-media-btn profile-banner-btn" data-action="toggle-profile-editor" data-target="background-editor">Edit background</button>
+                <div id="background-editor" class="profile-editor-popover d-none" aria-label="Background editor">
+                    <div class="profile-editor-head">
+                        <strong>Background mode</strong>
+                        <button type="button" class="profile-editor-close" data-action="toggle-profile-editor" data-target="background-editor">&times;</button>
+                    </div>
+                    <label class="profile-editor-label">Fit
+                        <select class="form-select form-select-sm" name="background_fit" form="profile-edit-form" data-preview-target="#profile-background-preview" data-preview-style="objectFit">
+                            <?php foreach (['contain', 'stretch'] as $fitOption): ?>
+                                <option value="<?php echo htmlspecialchars($fitOption); ?>" <?php echo $backgroundFit === $fitOption ? 'selected' : ''; ?>><?php echo htmlspecialchars($fitOption); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <label class="profile-editor-label">Size
+                        <input type="range" min="100" max="200" name="background_scale" form="profile-edit-form" value="<?php echo (int) $backgroundScale; ?>" data-preview-target="#profile-background-preview" data-preview-style="scale">
+                    </label>
+                    <label class="profile-editor-label">Horizontal position
+                        <input type="range" min="0" max="100" name="background_pos_x" form="profile-edit-form" value="<?php echo (int) $backgroundPosX; ?>" data-preview-target="#profile-background-preview" data-preview-style="objectPositionX">
+                    </label>
+                    <label class="profile-editor-label">Vertical position
+                        <input type="range" min="0" max="100" name="background_pos_y" form="profile-edit-form" value="<?php echo (int) $backgroundPosY; ?>" data-preview-target="#profile-background-preview" data-preview-style="objectPositionY">
+                    </label>
+                    <label for="background_file" class="btn btn-sm btn-outline-light profile-editor-upload">Replace image</label>
+                </div>
             <?php endif; ?>
         </div>
 
         <div class="profile-avatar-wrap">
-            <?php if (!empty($pfpPath)): ?>
-                <img src="<?php echo htmlspecialchars(site_asset_url((string) $pfpPath)); ?>" alt="Profile picture" class="profile-avatar">
-            <?php else: ?>
-                <div class="profile-avatar d-flex align-items-center justify-content-center text-white">Pfp</div>
+            <div class="profile-avatar-frame">
+                <img
+                    id="profile-avatar-preview"
+                    src="<?php echo htmlspecialchars($profileAvatarSrc); ?>"
+                    alt="Profile picture"
+                    class="profile-avatar"
+                    style="object-fit: <?php echo htmlspecialchars(profileFitCssValue($avatarFit)); ?>; transform: translate(<?php echo ((int) $avatarPosX - 50); ?>%, <?php echo ((int) $avatarPosY - 50); ?>%) scale(<?php echo ((int) $avatarScale) / 100; ?>); transform-origin: center center;"
+                    data-profile-object-position-x="<?php echo (int) $avatarPosX; ?>"
+                    data-profile-object-position-y="<?php echo (int) $avatarPosY; ?>"
+                    data-profile-scale="<?php echo (int) $avatarScale; ?>"
+                >
+            </div>
+            <?php if ($isOwnProfile): ?>
+                <button type="button" class="btn btn-sm btn-dark profile-media-btn profile-avatar-btn" data-action="toggle-profile-editor" data-target="avatar-editor">Edit picture</button>
+                <div id="avatar-editor" class="profile-editor-popover profile-editor-avatar d-none" aria-label="Avatar editor">
+                    <div class="profile-editor-head">
+                        <strong>Picture mode</strong>
+                        <button type="button" class="profile-editor-close" data-action="toggle-profile-editor" data-target="avatar-editor">&times;</button>
+                    </div>
+                    <label class="profile-editor-label">Fit
+                        <select class="form-select form-select-sm" name="avatar_fit" form="profile-edit-form" data-preview-target="#profile-avatar-preview" data-preview-style="objectFit">
+                            <?php foreach (['contain', 'stretch'] as $fitOption): ?>
+                                <option value="<?php echo htmlspecialchars($fitOption); ?>" <?php echo $avatarFit === $fitOption ? 'selected' : ''; ?>><?php echo htmlspecialchars($fitOption); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <label class="profile-editor-label">Size
+                        <input type="range" min="100" max="200" name="avatar_scale" form="profile-edit-form" value="<?php echo (int) $avatarScale; ?>" data-preview-target="#profile-avatar-preview" data-preview-style="scale">
+                    </label>
+                    <label class="profile-editor-label">Horizontal position
+                        <input type="range" min="0" max="100" name="avatar_pos_x" form="profile-edit-form" value="<?php echo (int) $avatarPosX; ?>" data-preview-target="#profile-avatar-preview" data-preview-style="objectPositionX">
+                    </label>
+                    <label class="profile-editor-label">Vertical position
+                        <input type="range" min="0" max="100" name="avatar_pos_y" form="profile-edit-form" value="<?php echo (int) $avatarPosY; ?>" data-preview-target="#profile-avatar-preview" data-preview-style="objectPositionY">
+                    </label>
+                    <label for="avatar_file" class="btn btn-sm btn-outline-light profile-editor-upload">Replace image</label>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -218,17 +352,13 @@ $backgroundPath = $profile['background_path'] ?? null;
                         <p class="profile-feedback error"><?php echo htmlspecialchars($saveError); ?></p>
                     <?php endif; ?>
 
-                    <form method="POST" action="Profile.php" class="profile-edit-form" enctype="multipart/form-data">
+                    <form method="POST" action="Profile.php" class="profile-edit-form" enctype="multipart/form-data" id="profile-edit-form">
                         <label for="profile_description" class="form-label profile-label mb-0">Description</label>
                         <textarea id="profile_description" class="form-control" name="profile_description" rows="5" maxlength="2000" placeholder="Write your profile description..."><?php echo htmlspecialchars($profileDescription); ?></textarea>
 
-                        <label for="avatar_file" class="form-label profile-label mb-0 mt-1">Profile image</label>
-                        <input id="avatar_file" class="form-control" name="avatar_file" type="file" accept="image/jpeg, image/png, image/gif, image/webp">
-                        <input class="form-control form-control-sm text-muted" type="text" value="<?php echo htmlspecialchars((string) ($pfpPath ?? '')); ?>" readonly>
-
-                        <label for="background_file" class="form-label profile-label mb-0 mt-1">Background image</label>
-                        <input id="background_file" class="form-control" name="background_file" type="file" accept="image/*">
-                        <input class="form-control form-control-sm text-muted" type="text" value="<?php echo htmlspecialchars((string) ($backgroundPath ?? '')); ?>" readonly>
+                        <input id="avatar_file" class="visually-hidden profile-file-input" name="avatar_file" type="file" accept="image/jpeg, image/png, image/gif, image/webp" data-preview-target="#profile-avatar-preview">
+                        <input id="background_file" class="visually-hidden profile-file-input" name="background_file" type="file" accept="image/jpeg, image/png, image/gif, image/webp" data-preview-target="#profile-background-preview">
+                        <p class="profile-file-hint mb-0">Use the small edit buttons on the image itself to adjust display or replace the file. Save to apply.</p>
 
                         <button type="submit" class="btn btn-dark mt-2">Save profile</button>
                     </form>
