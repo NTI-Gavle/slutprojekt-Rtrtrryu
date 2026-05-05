@@ -70,9 +70,9 @@ $users = listUsersForAdmin($dbconn);
     </div>
   <?php endif; ?>
 
-  <div class="card shadow-sm border-0">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
+  <div class="card shadow-sm border-0 admin-users-card">
+    <div class="table-responsive admin-users-table-responsive">
+      <table class="table table-hover align-middle mb-0 admin-users-table">
         <thead class="table-light">
           <tr>
             <th>ID</th>
@@ -90,17 +90,17 @@ $users = listUsersForAdmin($dbconn);
               $role = (int) ($u['role_value'] ?? 0);
             ?>
             <tr>
-              <td><?php echo $uid; ?></td>
-              <td><?php echo htmlspecialchars((string) ($u['username'] ?? 'unknown')); ?></td>
-              <td>
+              <td data-label="ID"><?php echo $uid; ?></td>
+              <td data-label="Username"><?php echo htmlspecialchars((string) ($u['username'] ?? 'unknown')); ?></td>
+              <td data-label="Role">
                 <?php if ($role === 1): ?>
                   <span class="badge bg-primary">Admin</span>
                 <?php else: ?>
                   <span class="badge bg-secondary">User</span>
                 <?php endif; ?>
               </td>
-              <td><?php echo htmlspecialchars((string) ($u['age_value'] ?? '-')); ?></td>
-              <td class="text-end">
+              <td data-label="Age"><?php echo htmlspecialchars((string) ($u['age_value'] ?? '-')); ?></td>
+              <td data-label="Action" class="text-end">
                 <?php if ($isSelf): ?>
                   <span class="text-muted small">Current account</span>
                 <?php else: ?>
