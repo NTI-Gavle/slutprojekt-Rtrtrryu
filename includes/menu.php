@@ -1,0 +1,22 @@
+<div id="mySidenav" class="sidenav">
+  <a href="#" class="closebtn" data-action="close-nav">&times;</a>
+  <a href="index.php">Explore</a>
+  <a href="https://www.youtube.com/watch?v=2ltPZ6pl6JI&list=RD2ltPZ6pl6JI&start_radio=1">For You</a>
+  <a href="Profile.php">Profile/settings</a>
+  <?php
+    if (isset($_SESSION['user_id'])) {
+      if (!isset($dbconn)) {
+        include __DIR__ . '/../database/db.php';
+      }
+      if (!function_exists('userHasAdminAccess')) {
+        require_once __DIR__ . '/../database/user_queries.php';
+      }
+
+      if (isset($dbconn) && userHasAdminAccess($dbconn, (int) $_SESSION['user_id'])) {
+        echo '<a href="admin-users.php">Admin users</a>';
+      }
+    }
+  ?>
+  <a href="https://www.youtube.com/watch?v=U06jlgpMtQs&list=RDU06jlgpMtQs&start_radio=1">Help</a>
+</div>
+<span style="font-size:30px;cursor:pointer" data-action="open-nav">&#9776; open</span>

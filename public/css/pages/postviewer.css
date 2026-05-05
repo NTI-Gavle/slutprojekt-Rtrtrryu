@@ -1,0 +1,16 @@
+.blurred { filter: blur(16px); user-select: none; }
+.adult-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: .75rem;
+    padding: 1rem;
+}
+.adult-overlay a { color: #fff; text-decoration: underline; }
+

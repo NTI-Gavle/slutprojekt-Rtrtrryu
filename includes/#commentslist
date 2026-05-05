@@ -1,0 +1,48 @@
+<?php if (isset($_SESSION['user_id'])): ?>
+    <form id="commentForm" class="mb-3">
+        <input type="hidden" name="post_id" value="<?php echo (int)$postId; ?>">
+        <div class="input-group">
+            <input type="text" name="body" class="form-control" maxlength="500" placeholder="Write a comment..." required>
+            <button type="submit" class="btn btn-primary">Post</button>
+        </div>
+    </form>
+<?php else: ?>
+    <p class="text-muted mb-3">Log in to comment.</p>
+<?php endif; ?>
+
+<script>
+(() => {
+  const form = document.getElementById('commentForm');
+  const list = document.getElementById('commentsList');
+  if (!form || !list) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+
+    const res = await fetch('api/add-comment.php', { method: 'POST', body: fd });
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert(data.error || 'Could not post comment');
+      return;
+    }
+
+    const c = data.comment;
+    const div = document.createElement('div');
+    div.className = 'd-flex gap-3 border rounded p-2 mb-2';
+    div.innerHTML = `
+      <div class="text-center" style="min-width:72px;">
+        <img src="${c.Pfp ? c.Pfp : 'images/default-pfp.png'}" alt="pfp" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+        <div class="small mt-1">${c.username}</div>
+      </div>
+      <div class="flex-grow-1">
+        <p class="mb-1">${c.body.replace(/\n/g, '<br>')}</p>
+        <small class="text-muted">${c.created}</small>
+      </div>
+    `;
+    list.prepend(div);
+    form.reset();
+  });
+})();
+</script>
