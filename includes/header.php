@@ -1,9 +1,11 @@
-<?php
+﻿<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $headerAvatarPath = null;
 $headerAvatarStyle = '';
+
+/* kollar om user är inloggad med att kolla om attiva användaren har ett id igång*/
 if (isset($_SESSION['user_id'])) {
     require_once __DIR__ . '/../database/db.php';
     require_once __DIR__ . '/../database/user_queries.php';
